@@ -3,68 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Work-Hub Dashboard - Your centralized productivity hub">
-    <meta name="theme-color" content="#0f766e">
-    <title>Work-Hub - Resource Center</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta name="description" content="Work-Hub - Walmart Associate Resource Center">
+    <title>Work-Hub - Associate Resource Center</title>
+    <link rel="stylesheet" href="styles.css?v=2025">
 </head>
 <body>
-    <!-- Skip to main content link for accessibility -->
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-
-    <!-- Navigation -->
-    <nav class="navbar" role="navigation" aria-label="Main navigation">
-        <div class="navbar-container">
-            <div class="navbar-brand">
-                <h1>🚀 Work-Hub</h1>
-                <p class="tagline">Associate Resource Center</p>
-            </div>
-            <ul class="nav-links">
-                <li><a href="#resources" aria-label="Go to resources section">Resources</a></li>
-                <li><a href="#about" aria-label="Go to about section">About</a></li>
-                <li><a href="#contact" aria-label="Go to contact section">Support</a></li>
-            </ul>
+    <nav class="navbar">
+        <div class="nav-content">
+            <h1>Work-Hub</h1>
+            <p>Associate Resource Center</p>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main id="main-content">
-        <!-- Hero Section -->
-        <section class="hero" aria-labelledby="hero-title">
-            <div class="hero-content">
-                <h2 id="hero-title">Welcome to Work-Hub</h2>
-                <p class="hero-description">Your go-to resource center for training materials, policies, and everything you need to succeed at Walmart.</p>
-                <button class="cta-button" onclick="scrollToSection('resources')" aria-label="Browse resources">Browse Resources</button>
-            </div>
-            <div class="hero-visual">
-                <div class="dashboard-preview" aria-hidden="true">
-                    <div class="window">
-                        <div class="window-header"></div>
-                        <div class="window-content">
-                            <div class="stat-card"></div>
-                            <div class="stat-card"></div>
-                            <div class="stat-card"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <main>
+        <section class="hero">
+            <h2>Welcome to Work-Hub</h2>
+            <p>Find training materials, policies, and resources to succeed at Walmart</p>
+            <button onclick="scrollTo('resources')" class="btn">Browse Resources</button>
         </section>
 
-        <!-- Resource Center Section -->
-        <section id="resources" class="resources" aria-labelledby="resources-title">
-            <h2 id="resources-title">Resource Center</h2>
-            <p class="section-subtitle">Find training materials, policies, and guides to support your success</p>
+        <section id="resources" class="resources">
+            <h2>Resource Center</h2>
             
-            <!-- Search and Filter Bar -->
-            <div class="resource-controls">
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Search resources..." aria-label="Search resources by title or description">
-                    <span class="search-icon">🔍</span>
+            <div class="controls">
+                <div class="search">
+                    <input type="text" id="searchInput" placeholder="Search resources...">
                 </div>
                 
-                <div class="filter-section">
-                    <label for="categoryFilter" class="filter-label">Category:</label>
-                    <select id="categoryFilter" aria-label="Filter by category">
+                <div class="filters">
+                    <select id="categoryFilter">
                         <option value="">All Categories</option>
                         <option value="Safety">Safety</option>
                         <option value="Operations">Operations</option>
@@ -77,75 +44,43 @@
                     </select>
                 </div>
                 
-                <div class="tag-filters" id="tagFilters" aria-label="Filter by tags"></div>
+                <div id="tagContainer" class="tags"></div>
             </div>
-            
-            <!-- Documents Grid -->
-            <div class="documents-grid" id="documentsGrid" role="region" aria-live="polite" aria-label="Resource documents">
-                <!-- Populated by JavaScript -->
-            </div>
-            
-            <!-- No Results Message -->
-            <div id="noResults" class="no-results" style="display: none;">
-                <p>No resources found matching your search. Try adjusting your filters.</p>
+
+            <div id="resourcesGrid" class="grid"></div>
+            <div id="noResults" class="no-results" style="display:none;">
+                <p>No resources found. Try adjusting your filters.</p>
             </div>
         </section>
 
-        <!-- About Section -->
-        <section id="about" class="about" aria-labelledby="about-title">
-            <h2 id="about-title">About Work-Hub</h2>
-            <div class="about-content">
-                <div class="about-card">
-                    <h3>Associate-First Design</h3>
-                    <p>We believe in putting associates first. Every resource is organized and easy to find, no jargon, just clear information you need.</p>
+        <section class="about">
+            <h2>About Work-Hub</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>Easy to Find</h3>
+                    <p>Search and filter resources quickly with our intuitive interface.</p>
                 </div>
-                <div class="about-card">
-                    <h3>Always Learning</h3>
-                    <p>Education and training are key to success. Access everything from onboarding to advanced development materials in one place.</p>
+                <div class="card">
+                    <h3>Always Available</h3>
+                    <p>Access training materials anytime, anywhere you need them.</p>
                 </div>
-                <div class="about-card">
-                    <h3>Fast & Accessible</h3>
-                    <p>Lightning-fast search and filtering means you'll find what you need in seconds. Mobile-friendly too.</p>
+                <div class="card">
+                    <h3>Associate First</h3>
+                    <p>Designed with you in mind - simple, clear, and helpful.</p>
                 </div>
             </div>
         </section>
 
-        <!-- Support Section -->
-        <section id="contact" class="support" aria-labelledby="support-title">
-            <h2 id="support-title">Need Help?</h2>
-            <p>Can't find what you're looking for? We're here to help!</p>
-            <div class="support-grid">
-                <div class="support-card">
-                    <h3>📧 Email Support</h3>
-                    <p>Send us your questions and we'll respond within 24 hours.</p>
-                    <a href="mailto:support@workhub.com" class="support-link">support@workhub.com</a>
-                </div>
-                <div class="support-card">
-                    <h3>💬 Chat Support</h3>
-                    <p>Need immediate help? Chat with our support team during business hours.</p>
-                    <button class="support-link" onclick="alert('Chat feature coming soon!')">Start Chat</button>
-                </div>
-                <div class="support-card">
-                    <h3>📞 Call Us</h3>
-                    <p>Prefer to talk? Call our support line for urgent issues.</p>
-                    <a href="tel:1-800-WALMART" class="support-link">1-800-WALMART</a>
-                </div>
-            </div>
+        <section class="footer-section">
+            <h2>Need Help?</h2>
+            <p>Contact your manager or HR for additional support.</p>
         </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer" role="contentinfo">
-        <div class="footer-content">
-            <p>&copy; 2024 Work-Hub. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="#" aria-label="View privacy policy">Privacy Policy</a>
-                <a href="#" aria-label="View terms of service">Terms of Service</a>
-                <a href="https://github.com/x0bi3/Work-Hub" aria-label="Visit Work-Hub on GitHub">GitHub</a>
-            </div>
-        </div>
+    <footer>
+        <p>&copy; 2025 Work-Hub. All rights reserved.</p>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=2025"></script>
 </body>
 </html>
