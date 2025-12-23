@@ -1,7 +1,6 @@
 # New Hire Onboarding Checklist
 
-## Welcome to Walmart!
-We're excited to have you join our team. Use this checklist to ensure you complete all onboarding requirements.
+Complete checklist and resources for new associate onboarding.
 
 ## Day 1 - Before You Start
 - [ ] Bring valid ID and Social Security card
@@ -12,8 +11,8 @@ We're excited to have you join our team. Use this checklist to ensure you comple
 
 ## Week 1 - Getting Started
 - [ ] Complete orientation training
-- [ ] Get store tour and facility familiarization
-- [ ] Meet your direct manager
+- [ ] Get store tour
+- [ ] Meet your manager
 - [ ] Receive uniform/name badge
 - [ ] Complete safety training
 - [ ] Learn point-of-sale systems
@@ -24,21 +23,9 @@ We're excited to have you join our team. Use this checklist to ensure you comple
 - [ ] Shadow experienced associate
 - [ ] Practice skills under supervision
 - [ ] Pass department assessments
-- [ ] Learn store policies and procedures
+- [ ] Learn store policies
 - [ ] Set up payroll information
 - [ ] Access Walmart One portal
 
-## Ongoing
-- [ ] Complete required certifications
-- [ ] Meet with manager for feedback
-- [ ] Learn about advancement opportunities
-- [ ] Join team activities
-- [ ] Complete annual training refreshers
-
-## Contact Your Manager
-If you have questions during onboarding, always feel free to ask your manager or HR representative.
-
-## Celebrate!
-You're now part of the Walmart family. Welcome aboard!
-
-*Last Updated: December 1, 2025*
+## Welcome!
+You're now part of the Walmart family. Contact your manager with any questions!
