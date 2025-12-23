@@ -1,0 +1,29 @@
+{
+  "name": "work-hub",
+  "version": "1.0.0",
+  "description": "A professional, accessible dashboard for managing projects and productivity",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 3000 -c-1",
+    "build": "echo 'No build step required for static site'",
+    "test": "echo 'Add test suite here'",
+    "serve": "python -m http.server 8000",
+    "deploy": "git add . && git commit -m 'Deploy to GitHub Pages' && git push origin main"
+  },
+  "keywords": [
+    "dashboard",
+    "productivity",
+    "project-management",
+    "web-app"
+  ],
+  "author": "x0bi3",
+  "license": "MIT",
+  "homepage": "https://github.com/x0bi3/Work-Hub",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/x0bi3/Work-Hub.git"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.0"
+  }
+}
