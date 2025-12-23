@@ -1,114 +1,112 @@
-{
-  "documents": [
-    {
-      "id": 1,
-      "title": "Safety Protocol & Procedures",
-      "description": "Essential safety guidelines and emergency procedures for all associates",
-      "category": "Safety",
-      "tags": ["safety", "training", "mandatory", "procedures"],
-      "author": "Safety Team",
-      "date": "2025-12-20",
-      "file_type": "PDF",
-      "path": "resources/safety-protocol.md"
-    },
-    {
-      "id": 2,
-      "title": "Warehouse Operations Guide",
-      "description": "Complete guide to warehouse operations, inventory management, and best practices",
-      "category": "Operations",
-      "tags": ["operations", "warehouse", "training", "procedures"],
-      "author": "Operations Team",
-      "date": "2025-12-15",
-      "file_type": "PDF",
-      "path": "resources/warehouse-operations.md"
-    },
-    {
-      "id": 3,
-      "title": "Customer Service Standards",
-      "description": "Walmart's commitment to customer service excellence and best practices",
-      "category": "Training",
-      "tags": ["customer-service", "training", "culture", "standards"],
-      "author": "Customer Experience Team",
-      "date": "2025-12-10",
-      "file_type": "PDF",
-      "path": "resources/customer-service-standards.md"
-    },
-    {
-      "id": 4,
-      "title": "System Access & IT Guide",
-      "description": "How to access Walmart systems, password policies, and IT support resources",
-      "category": "Technology",
-      "tags": ["it", "training", "systems", "access"],
-      "author": "IT Department",
-      "date": "2025-12-18",
-      "file_type": "PDF",
-      "path": "resources/system-access-guide.md"
-    },
-    {
-      "id": 5,
-      "title": "Break & Meal Policies",
-      "description": "Associate breaks, meal periods, and rest day guidelines",
-      "category": "Policies",
-      "tags": ["policies", "hr", "associate", "benefits"],
-      "author": "Human Resources",
-      "date": "2025-12-12",
-      "file_type": "PDF",
-      "path": "resources/break-meal-policies.md"
-    },
-    {
-      "id": 6,
-      "title": "Performance Expectations",
-      "description": "Clear expectations for performance, goals, and evaluation criteria",
-      "category": "Development",
-      "tags": ["performance", "goals", "training", "development"],
-      "author": "Management Team",
-      "date": "2025-12-14",
-      "file_type": "PDF",
-      "path": "resources/performance-expectations.md"
-    },
-    {
-      "id": 7,
-      "title": "Diversity & Inclusion",
-      "description": "Walmart's commitment to diversity, equity, and inclusive workplace culture",
-      "category": "Culture",
-      "tags": ["culture", "diversity", "training", "inclusion"],
-      "author": "People Team",
-      "date": "2025-12-20",
-      "file_type": "PDF",
-      "path": "resources/diversity-inclusion.md"
-    },
-    {
-      "id": 8,
-      "title": "Loss Prevention Handbook",
-      "description": "Security procedures and loss prevention best practices for all associates",
-      "category": "Safety",
-      "tags": ["safety", "security", "training", "procedures"],
-      "author": "Security Team",
-      "date": "2025-12-08",
-      "file_type": "PDF",
-      "path": "resources/loss-prevention.md"
-    },
-    {
-      "id": 9,
-      "title": "New Hire Onboarding Checklist",
-      "description": "Complete checklist and resources for new associate onboarding process",
-      "category": "Onboarding",
-      "tags": ["onboarding", "new-hire", "checklist", "training"],
-      "author": "Onboarding Team",
-      "date": "2025-12-01",
-      "file_type": "Checklist",
-      "path": "resources/new-hire-checklist.md"
-    },
-    {
-      "id": 10,
-      "title": "Technology Tools & Systems",
-      "description": "Guide to Walmart technology tools, applications, and how to use them effectively",
-      "category": "Technology",
-      "tags": ["it", "tools", "training", "systems"],
-      "author": "IT Training Team",
-      "date": "2025-12-17",
-      "file_type": "PDF",
-      "path": "resources/technology-tools.md"
-    }
-  ]
-}
+[
+  {
+    "id": 1,
+    "title": "Safety Protocol & Procedures",
+    "description": "Essential safety guidelines and emergency procedures for all associates.",
+    "category": "Safety",
+    "tags": ["safety", "training", "mandatory"],
+    "author": "Safety Team",
+    "date": "Dec 20, 2025",
+    "icon": "🚨",
+    "path": "resources/safety-protocol.md"
+  },
+  {
+    "id": 2,
+    "title": "Warehouse Operations Guide",
+    "description": "Complete guide to warehouse operations, inventory management, and best practices.",
+    "category": "Operations",
+    "tags": ["operations", "warehouse", "training"],
+    "author": "Operations Team",
+    "date": "Dec 15, 2025",
+    "icon": "📦",
+    "path": "resources/warehouse-operations.md"
+  },
+  {
+    "id": 3,
+    "title": "Customer Service Standards",
+    "description": "Walmart's commitment to customer service excellence and best practices.",
+    "category": "Training",
+    "tags": ["customer-service", "training", "culture"],
+    "author": "Customer Experience Team",
+    "date": "Dec 10, 2025",
+    "icon": "😊",
+    "path": "resources/customer-service-standards.md"
+  },
+  {
+    "id": 4,
+    "title": "System Access & IT Guide",
+    "description": "How to access Walmart systems, password policies, and IT support.",
+    "category": "Technology",
+    "tags": ["it", "training", "systems"],
+    "author": "IT Department",
+    "date": "Dec 18, 2025",
+    "icon": "💻",
+    "path": "resources/system-access-guide.md"
+  },
+  {
+    "id": 5,
+    "title": "Break & Meal Policies",
+    "description": "Associate breaks, meal periods, and rest day guidelines.",
+    "category": "Policies",
+    "tags": ["policies", "hr", "benefits"],
+    "author": "Human Resources",
+    "date": "Dec 12, 2025",
+    "icon": "🍴",
+    "path": "resources/break-meal-policies.md"
+  },
+  {
+    "id": 6,
+    "title": "Performance Expectations",
+    "description": "Clear expectations for performance, goals, and evaluation criteria.",
+    "category": "Development",
+    "tags": ["performance", "goals", "development"],
+    "author": "Management Team",
+    "date": "Dec 14, 2025",
+    "icon": "⭐",
+    "path": "resources/performance-expectations.md"
+  },
+  {
+    "id": 7,
+    "title": "Diversity & Inclusion",
+    "description": "Walmart's commitment to diversity, equity, and inclusive workplace culture.",
+    "category": "Culture",
+    "tags": ["culture", "diversity", "training"],
+    "author": "People Team",
+    "date": "Dec 20, 2025",
+    "icon": "🤝",
+    "path": "resources/diversity-inclusion.md"
+  },
+  {
+    "id": 8,
+    "title": "Loss Prevention Handbook",
+    "description": "Security procedures and loss prevention best practices.",
+    "category": "Safety",
+    "tags": ["safety", "security", "procedures"],
+    "author": "Security Team",
+    "date": "Dec 08, 2025",
+    "icon": "🔒",
+    "path": "resources/loss-prevention.md"
+  },
+  {
+    "id": 9,
+    "title": "New Hire Onboarding Checklist",
+    "description": "Complete checklist and resources for new associate onboarding.",
+    "category": "Onboarding",
+    "tags": ["onboarding", "new-hire", "checklist"],
+    "author": "Onboarding Team",
+    "date": "Dec 01, 2025",
+    "icon": "✅",
+    "path": "resources/new-hire-checklist.md"
+  },
+  {
+    "id": 10,
+    "title": "Technology Tools & Systems",
+    "description": "Guide to Walmart technology tools and applications.",
+    "category": "Technology",
+    "tags": ["it", "tools", "systems"],
+    "author": "IT Training Team",
+    "date": "Dec 17, 2025",
+    "icon": "🛠️",
+    "path": "resources/technology-tools.md"
+  }
+]
