@@ -1113,8 +1113,12 @@
                     localStorage.setItem('pendingNewsletterSubscriptions', JSON.stringify(pendingSubmissions));
                     print('[newsletter] Stored submission locally. Count:', pendingSubmissions.length);
                     
+                    // Provide more helpful error message
                     if (response.status === 401) {
-                        throw new Error('Authentication required. Please configure PUBLIC_FORM_TOKEN in index.html with a GitHub token that has "public_repo" scope.');
+                        print('[newsletter] ERROR: 401 Unauthorized - Token may be invalid or expired');
+                        print('[newsletter] Token configured:', PUBLIC_FORM_TOKEN ? 'Yes' : 'No');
+                        print('[newsletter] Token length:', PUBLIC_FORM_TOKEN ? PUBLIC_FORM_TOKEN.length : 0);
+                        throw new Error(`Authentication failed. Please check that the token is valid and has "public_repo" scope. Error: ${errorMessage}`);
                     } else {
                         throw new Error(`Subscription failed (${response.status}): ${errorMessage}. Your submission has been saved locally and will be processed manually.`);
                     }
