@@ -1,0 +1,112 @@
+name: Send Newsletter
+
+on:
+  workflow_dispatch:
+    inputs:
+      subject:
+        description: 'Newsletter Subject'
+        required: true
+        default: 'Work Hub Newsletter'
+      html_content:
+        description: 'HTML Content (paste HTML here)'
+        required: true
+        type: string
+      preview:
+        description: 'Preview only (do not send)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+  schedule:
+    # Run every Monday at 9 AM UTC (adjust timezone as needed)
+    - cron: '0 9 * * 1'
+
+jobs:
+  send-newsletter:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Create newsletter content file
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          cat > newsletter_content.html << 'EOF'
+          ${{ github.event.inputs.html_content }}
+          EOF
+
+      - name: Create default newsletter content
+        if: github.event_name == 'schedule'
+        run: |
+          cat > newsletter_content.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: #0f766e; color: white; padding: 20px; text-align: center; }
+              .content { padding: 20px; background: #f9f9f9; }
+              .footer { padding: 20px; text-align: center; font-size: 12px; color: #666; }
+              .button { display: inline-block; padding: 10px 20px; background: #f59e0b; color: white; text-decoration: none; border-radius: 5px; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>Work Hub Newsletter</h1>
+              </div>
+              <div class="content">
+                <p>Hi {name},</p>
+                <p>Welcome to this week's Work Hub Newsletter!</p>
+                <h2>Upcoming Events</h2>
+                <p>Check out our calendar for upcoming events and important dates.</p>
+                <h2>Company Updates</h2>
+                <p>Stay informed about the latest company news and announcements.</p>
+                <p><a href="https://your-github-username.github.io/Work-Hub/" class="button">Visit Work Hub</a></p>
+              </div>
+              <div class="footer">
+                <p>You're receiving this because you subscribed to the Work Hub Newsletter.</p>
+                <p>&copy; 2025 Work Hub. All rights reserved.</p>
+              </div>
+            </div>
+          </body>
+          </html>
+          EOF
+
+      - name: Preview newsletter
+        if: github.event.inputs.preview == 'true'
+        run: |
+          echo "Newsletter Preview:"
+          echo "Subject: ${{ github.event.inputs.subject }}"
+          echo ""
+          echo "Content:"
+          cat newsletter_content.html
+          echo ""
+          echo "Subscriber count:"
+          python3 -c "import json; print(len(json.load(open('subscribers.json'))))"
+
+      - name: Send newsletter
+        if: github.event.inputs.preview != 'true'
+        env:
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+        run: |
+          SUBJECT="${{ github.event.inputs.subject }}"
+          if [ -z "$SUBJECT" ]; then
+            SUBJECT="Work Hub Newsletter - $(date +'%B %Y')"
+          fi
+          
+          python3 send_newsletter.py "$SUBJECT" newsletter_content.html
