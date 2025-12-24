@@ -19,6 +19,8 @@ jobs:
           token: ${{ secrets.WORKHUB_GH_PAT }}
 
       - name: Inject GitHub token for form submissions
+        env:
+          GITHUB_TOKEN: ${{ secrets.WORKHUB_GH_PAT }}
         # Use WORKHUB_GH_PAT to create a config file with the token
         # This token will be used client-side to trigger repository_dispatch
         # The actual processing uses WORKHUB_GH_PAT secret server-side
@@ -30,13 +32,18 @@ jobs:
           // This token is used to trigger repository_dispatch events
           // The actual processing uses WORKHUB_GH_PAT secret server-side
           window.NEWSLETTER_CONFIG = {
-            githubToken: '${{ secrets.WORKHUB_GH_PAT }}',
+            githubToken: '${GITHUB_TOKEN}',
             repo: '${{ github.repository }}',
             useRepositoryDispatch: true
           };
           EOF
           
           echo "✅ Newsletter configuration file created"
+          if [ -n "$GITHUB_TOKEN" ]; then
+            echo "Token injected successfully"
+          else
+            echo "⚠️ Warning: WORKHUB_GH_PAT secret is not set!"
+          fi
 
       - name: Commit config file
         run: |

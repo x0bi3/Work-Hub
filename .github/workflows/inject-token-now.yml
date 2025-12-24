@@ -17,6 +17,8 @@ jobs:
           persist-credentials: true
 
       - name: Inject GitHub token for form submissions
+        env:
+          GITHUB_TOKEN: ${{ secrets.WORKHUB_GH_PAT }}
         run: |
           # Create newsletter config with token
           cat > newsletter-config.js << EOF
@@ -24,14 +26,18 @@ jobs:
           // This token is used to trigger repository_dispatch events
           // The actual processing uses WORKHUB_GH_PAT secret server-side
           window.NEWSLETTER_CONFIG = {
-            githubToken: '${{ secrets.WORKHUB_GH_PAT }}',
+            githubToken: '${GITHUB_TOKEN}',
             repo: '${{ github.repository }}',
             useRepositoryDispatch: true
           };
           EOF
           
           echo "✅ Newsletter configuration file created"
-          echo "Token length: ${#WORKHUB_GH_PAT}"
+          if [ -n "$GITHUB_TOKEN" ]; then
+            echo "Token injected successfully (length: ${#GITHUB_TOKEN})"
+          else
+            echo "⚠️ Warning: Token is empty!"
+          fi
 
       - name: Commit and push config file
         run: |
