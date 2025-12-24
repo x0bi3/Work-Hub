@@ -737,9 +737,8 @@
         const GITHUB_BRANCH = 'main'; // Your default branch name
         
         // Authentication Setup:
-        // 1. Create a GitHub Personal Access Token (see AUTH_SETUP.md)
-        // 2. Set it in browser console: localStorage.setItem('github_token', 'YOUR_TOKEN')
-        // 3. Or configure it server-side for production use
+        // Option 1: Use GitHub Secret (WORKHUB_GH_PAT) via repository_dispatch (recommended)
+        // Option 2: Set token in browser console: localStorage.setItem('github_token', 'YOUR_TOKEN')
         // Note: Tokens in localStorage are visible to users - use only for testing!
 
         // FAQ Data
@@ -1035,7 +1034,7 @@
                 print('[newsletter] Submitting subscription:', formData.email);
                 
                 // Try to get GitHub token from localStorage (set via browser console)
-                // In production, this should come from a secure backend/API
+                // This token is used to trigger repository_dispatch, which then uses WORKHUB_GH_PAT secret server-side
                 const githubToken = localStorage.getItem('github_token') || '';
                 
                 if (!githubToken) {
@@ -1051,10 +1050,11 @@
                     throw new Error('GitHub authentication required. Please see SETUP_TOKEN.md for setup instructions. Your subscription has been saved locally and will be processed once authentication is configured.');
                 }
                 
-                print('[newsletter] Using GitHub token for authentication...');
+                print('[newsletter] Triggering workflow via repository_dispatch...');
                 
-                // Create a GitHub Issue with authentication
-                const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/issues`, {
+                // Use repository_dispatch to trigger the workflow
+                // The workflow will use WORKHUB_GH_PAT secret server-side for processing
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/dispatches`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/vnd.github.v3+json',
@@ -1062,30 +1062,31 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        title: `Newsletter Subscription: ${formData.name}`,
-                        body: `**New Newsletter Subscription**\n\n` +
-                              `- **Name:** ${formData.name}\n` +
-                              `- **Email:** ${formData.email}\n` +
-                              `- **Department:** ${formData.department}\n` +
-                              `- **Weekly Digest:** ${formData.weeklyDigest ? 'Yes' : 'No'}\n` +
-                              `- **Subscribed At:** ${formData.subscribedAt}\n\n` +
-                              `---\n\n` +
-                              `\`\`\`json\n${JSON.stringify(formData, null, 2)}\n\`\`\``,
-                        labels: ['newsletter-subscription']
+                        event_type: 'newsletter-subscription',
+                        client_payload: {
+                            subscriber: formData
+                        }
                     })
                 });
 
                 if (!response.ok) {
-                    if (response.status === 401) {
+                    if (response.status === 401 || response.status === 403) {
                         localStorage.removeItem('github_token'); // Remove invalid token
-                        throw new Error('Invalid GitHub token. Please check SETUP_TOKEN.md and configure a valid token. Your subscription has been saved locally.');
+                        throw new Error('Invalid GitHub token or insufficient permissions. Please check SETUP_TOKEN.md and ensure your token has "repo" scope. Your subscription has been saved locally.');
                     }
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Failed to submit subscription');
+                    const errorText = await response.text();
+                    let errorMessage = 'Failed to submit subscription';
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        errorMessage = errorData.message || errorMessage;
+                    } catch (e) {
+                        errorMessage = errorText || errorMessage;
+                    }
+                    throw new Error(errorMessage);
                 }
 
-                const result = await response.json();
-                print('[newsletter] Subscription submitted successfully. Issue #' + result.number);
+                print('[newsletter] Subscription submitted successfully. Workflow triggered.');
+                const result = { success: true, message: 'Workflow triggered successfully' };
                 
                 // Show success message
                 messageDiv.className = 'message success';
