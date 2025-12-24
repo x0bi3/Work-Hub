@@ -30,12 +30,22 @@ jobs:
       - name: Extract subscription data
         id: extract
         run: |
-          ISSUE_BODY="${{ github.event.issue.body }}"
-          # Extract JSON from issue body
-          JSON_DATA=$(echo "$ISSUE_BODY" | grep -A 100 '```json' | grep -B 100 '```' | grep -v '```')
-          echo "json_data<<EOF" >> $GITHUB_OUTPUT
-          echo "$JSON_DATA" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          if [ "${{ github.event_name }}" == "issues" ]; then
+            ISSUE_BODY="${{ github.event.issue.body }}"
+            # Extract JSON from issue body
+            JSON_DATA=$(echo "$ISSUE_BODY" | grep -A 100 '```json' | grep -B 100 '```' | grep -v '```' || echo "")
+            if [ -z "$JSON_DATA" ]; then
+              echo "Error: Could not extract JSON from issue body"
+              exit 1
+            fi
+            echo "json_data<<EOF" >> $GITHUB_OUTPUT
+            echo "$JSON_DATA" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            echo "json_data<<EOF" >> $GITHUB_OUTPUT
+            echo '${{ toJSON(github.event.client_payload.subscriber) }}' >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
 
       - name: Add subscriber to list
         run: |
