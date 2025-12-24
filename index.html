@@ -1106,10 +1106,12 @@
                 let errorMsg = error.message;
                 
                 // Provide helpful instructions for auth errors
-                if (error.message.includes('authentication') || error.message.includes('token')) {
-                    errorMsg += '\n\nTo set up authentication, open browser console and run:\n' +
-                               'localStorage.setItem("github_token", "YOUR_TOKEN_HERE");\n\n' +
-                               'See AUTH_SETUP.md for detailed instructions.';
+                if (error.message.includes('authentication') || error.message.includes('token') || error.message.includes('GitHub')) {
+                    errorMsg += '\n\n📝 To set up authentication:\n' +
+                               '1. Open browser console (F12)\n' +
+                               '2. Run: localStorage.setItem("github_token", "YOUR_TOKEN_HERE")\n' +
+                               '3. See AUTH_SETUP.md for token creation instructions\n\n' +
+                               'Your subscription has been saved locally and will be processed once configured.';
                 } else {
                     errorMsg = `Sorry, there was an error: ${error.message}\n\nPlease try again later or contact support.`;
                 }
