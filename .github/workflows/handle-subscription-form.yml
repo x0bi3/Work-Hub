@@ -1,0 +1,195 @@
+name: Handle Newsletter Subscription Form
+
+on:
+  repository_dispatch:
+    types: [newsletter-subscription]
+  workflow_dispatch:
+    inputs:
+      subscriber_name:
+        description: 'Subscriber Name'
+        required: true
+      subscriber_email:
+        description: 'Subscriber Email'
+        required: true
+      subscriber_department:
+        description: 'Subscriber Department'
+        required: true
+      subscriber_weeklyDigest:
+        description: 'Weekly Digest (true/false)'
+        required: true
+        default: 'true'
+
+jobs:
+  process-subscription:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.WORKHUB_GH_PAT }}
+          persist-credentials: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Extract subscriber data
+        id: extract
+        run: |
+          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            # From repository_dispatch
+            echo "subscriber_json<<EOF" >> $GITHUB_OUTPUT
+            echo '${{ toJSON(github.event.client_payload.subscriber) }}' >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            # From workflow_dispatch inputs
+            cat > /tmp/subscriber.json << EOF
+          {
+            "name": "${{ github.event.inputs.subscriber_name }}",
+            "email": "${{ github.event.inputs.subscriber_email }}",
+            "department": "${{ github.event.inputs.subscriber_department }}",
+            "weeklyDigest": ${{ github.event.inputs.subscriber_weeklyDigest }},
+            "subscribedAt": "$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")"
+          }
+          EOF
+            echo "subscriber_json<<EOF" >> $GITHUB_OUTPUT
+            cat /tmp/subscriber.json >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Add subscriber to list
+        run: |
+          python3 << 'EOF'
+          import json
+          import sys
+          import os
+          
+          # Get subscriber data
+          subscriber_json = """${{ steps.extract.outputs.subscriber_json }}"""
+          subscriber_data = json.loads(subscriber_json)
+          
+          email = subscriber_data.get('email', '').lower()
+          name = subscriber_data.get('name', 'Subscriber')
+          
+          print(f"[subscription] Processing subscription for: {email}")
+          
+          # Read existing subscribers
+          try:
+              with open('subscribers.json', 'r') as f:
+                  subscribers = json.load(f)
+          except FileNotFoundError:
+              subscribers = []
+          
+          # Check if email already exists
+          existing = [s for s in subscribers if s.get('email', '').lower() == email]
+          
+          if existing:
+              print(f"[subscription] Email {email} already subscribed, updating...")
+              for i, sub in enumerate(subscribers):
+                  if sub.get('email', '').lower() == email:
+                      subscribers[i] = subscriber_data
+                      break
+          else:
+              print(f"[subscription] Adding new subscriber: {email}")
+              subscribers.append(subscriber_data)
+          
+          # Write back to file
+          with open('subscribers.json', 'w') as f:
+              json.dump(subscribers, f, indent=2)
+          
+          print(f"[subscription] Total subscribers: {len(subscribers)}")
+          EOF
+
+      - name: Commit subscriber update
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add subscribers.json
+          git commit -m "Add newsletter subscriber: ${{ github.event.client_payload.subscriber.name || github.event.inputs.subscriber_name }}" || echo "No changes"
+          git push
+
+      - name: Send confirmation email
+        env:
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+        run: |
+          python3 << 'EOF'
+          import json
+          import smtplib
+          from email.mime.text import MIMEText
+          from email.mime.multipart import MIMEMultipart
+          import os
+          
+          # Get subscriber data
+          subscriber_json = """${{ steps.extract.outputs.subscriber_json }}"""
+          subscriber = json.loads(subscriber_json)
+          
+          email = subscriber.get('email')
+          name = subscriber.get('name', 'Subscriber')
+          
+          if not email:
+              print("[email] No email address found")
+              exit(0)
+          
+          # Email configuration
+          smtp_server = os.getenv('SMTP_SERVER', 'smtp-mail.outlook.com')
+          smtp_port = int(os.getenv('SMTP_PORT', '587'))
+          smtp_user = os.getenv('SMTP_USER')
+          smtp_password = os.getenv('SMTP_PASSWORD')
+          from_email = os.getenv('FROM_EMAIL', smtp_user)
+          
+          if not smtp_user or not smtp_password:
+              print("[email] SMTP credentials not configured, skipping email")
+              exit(0)
+          
+          # Create email
+          msg = MIMEMultipart('alternative')
+          msg['Subject'] = 'Welcome to Our Newsletter!'
+          msg['From'] = from_email
+          msg['To'] = email
+          
+          text = f"""Hi {name},
+          
+Thank you for subscribing to our newsletter! You'll now receive updates about company events, news, and important announcements.
+          
+If you have any questions, please don't hesitate to reach out.
+          
+Best regards,
+Work Hub Team"""
+          
+          html = f"""<html>
+            <body>
+              <h2>Welcome to Our Newsletter!</h2>
+              <p>Hi {name},</p>
+              <p>Thank you for subscribing to our newsletter! You'll now receive updates about company events, news, and important announcements.</p>
+              <p>If you have any questions, please don't hesitate to reach out.</p>
+              <p>Best regards,<br>Work Hub Team</p>
+            </body>
+          </html>"""
+          
+          part1 = MIMEText(text, 'plain')
+          part2 = MIMEText(html, 'html')
+          
+          msg.attach(part1)
+          msg.attach(part2)
+          
+          # Send email
+          try:
+              print(f"[email] Sending confirmation email to {email}")
+              server = smtplib.SMTP(smtp_server, smtp_port)
+              server.starttls()
+              server.login(smtp_user, smtp_password)
+              server.send_message(msg)
+              server.quit()
+              print(f"[email] Confirmation email sent successfully")
+          except Exception as e:
+              print(f"[email] Error sending email: {e}")
+              exit(1)
+          EOF
