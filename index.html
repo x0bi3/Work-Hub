@@ -1036,21 +1036,12 @@
             try {
                 print('[newsletter] Submitting subscription:', formData.email);
                 
-                // Try to get GitHub token from localStorage (set via browser console)
-                // This token is used to trigger repository_dispatch, which then uses WORKHUB_GH_PAT secret server-side
-                const githubToken = localStorage.getItem('github_token') || '';
+                // Get GitHub token from config file (injected by GitHub Actions)
+                // Fallback to localStorage for development/testing
+                const githubToken = GITHUB_TOKEN || localStorage.getItem('github_token') || '';
                 
                 if (!githubToken) {
-                    // No token - store locally and show instructions
-                    const pendingSubmissions = JSON.parse(localStorage.getItem('pendingNewsletterSubscriptions') || '[]');
-                    pendingSubmissions.push({
-                        ...formData,
-                        submittedAt: new Date().toISOString(),
-                        id: Date.now().toString()
-                    });
-                    localStorage.setItem('pendingNewsletterSubscriptions', JSON.stringify(pendingSubmissions));
-                    
-                    throw new Error('GitHub authentication required. Please see SETUP_TOKEN.md for setup instructions. Your subscription has been saved locally and will be processed once authentication is configured.');
+                    throw new Error('Newsletter service is not configured. Please contact the administrator.');
                 }
                 
                 print('[newsletter] Triggering workflow via repository_dispatch...');
