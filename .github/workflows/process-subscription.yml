@@ -233,11 +233,11 @@ jobs:
           msg['To'] = email
           
           text = f"""Hi {name},
-          
+
 Thank you for subscribing to our newsletter! You'll now receive updates about company events, news, and important announcements.
-          
+
 If you have any questions, please don't hesitate to reach out.
-          
+
 Best regards,
 Work Hub Team"""
           
