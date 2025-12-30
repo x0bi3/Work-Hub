@@ -1,29 +1,17 @@
-name: Handle Newsletter Subscription Form
+name: Process Newsletter Subscription
 
 on:
-  repository_dispatch:
-    types: [newsletter-subscription]
-  workflow_dispatch:
-    inputs:
-      subscriber_name:
-        description: 'Subscriber Name'
-        required: true
-      subscriber_email:
-        description: 'Subscriber Email'
-        required: true
-      subscriber_department:
-        description: 'Subscriber Department'
-        required: true
-      subscriber_weeklyDigest:
-        description: 'Weekly Digest (true/false)'
-        required: true
-        default: 'true'
+  issues:
+    types: [opened]
 
 jobs:
   process-subscription:
     runs-on: ubuntu-latest
+    # Only run if issue has newsletter-subscription label
+    if: contains(github.event.issue.labels.*.name, 'newsletter-subscription')
     permissions:
       contents: write
+      issues: write
     
     steps:
       - name: Checkout repository
@@ -37,29 +25,31 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Extract subscriber data
+      - name: Extract subscription data from issue
         id: extract
         run: |
-          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
-            # From repository_dispatch
-            echo "subscriber_json<<EOF" >> $GITHUB_OUTPUT
-            echo '${{ toJSON(github.event.client_payload.subscriber) }}' >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
-          else
-            # From workflow_dispatch inputs
-            cat > /tmp/subscriber.json << EOF
-          {
-            "name": "${{ github.event.inputs.subscriber_name }}",
-            "email": "${{ github.event.inputs.subscriber_email }}",
-            "department": "${{ github.event.inputs.subscriber_department }}",
-            "weeklyDigest": ${{ github.event.inputs.subscriber_weeklyDigest }},
-            "subscribedAt": "$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")"
-          }
-          EOF
-            echo "subscriber_json<<EOF" >> $GITHUB_OUTPUT
-            cat /tmp/subscriber.json >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+          echo "[extract] Extracting subscription data from issue body"
+          ISSUE_BODY="${{ github.event.issue.body }}"
+          echo "[extract] Issue body length: ${#ISSUE_BODY}"
+          
+          # Extract JSON from issue body (between ```json and ```)
+          JSON_DATA=$(echo "$ISSUE_BODY" | sed -n '/```json/,/```/p' | sed '1d;$d')
+          
+          if [ -z "$JSON_DATA" ]; then
+            echo "[extract] ERROR: Could not extract JSON from issue body"
+            echo "[extract] Expected: JSON block between \`\`\`json and \`\`\`"
+            echo "[extract] Received: Issue body without valid JSON block"
+            echo "[extract] Full issue body:"
+            echo "$ISSUE_BODY"
+            exit 1
           fi
+          
+          echo "[extract] SUCCESS: Extracted JSON data"
+          echo "[extract] JSON data: $JSON_DATA"
+          
+          echo "json_data<<EOF" >> $GITHUB_OUTPUT
+          echo "$JSON_DATA" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Add subscriber to list
         run: |
@@ -68,49 +58,126 @@ jobs:
           import sys
           import os
           
-          # Get subscriber data
-          subscriber_json = """${{ steps.extract.outputs.subscriber_json }}"""
-          subscriber_data = json.loads(subscriber_json)
+          print("[subscription] Starting subscription processing")
           
-          email = subscriber_data.get('email', '').lower()
-          name = subscriber_data.get('name', 'Subscriber')
+          # Get subscriber data from extracted JSON
+          json_data = """${{ steps.extract.outputs.json_data }}"""
           
-          print(f"[subscription] Processing subscription for: {email}")
+          print(f"[subscription] Raw JSON data length: {len(json_data)}")
+          print(f"[subscription] Raw JSON data: {json_data}")
+          
+          try:
+              subscriber_data = json.loads(json_data)
+              print(f"[subscription] SUCCESS: Parsed subscriber data")
+              print(f"[subscription] Subscriber data: {json.dumps(subscriber_data, indent=2)}")
+          except json.JSONDecodeError as e:
+              print(f"[subscription] ERROR: Failed to parse JSON")
+              print(f"[subscription] JSONDecodeError: {str(e)}")
+              print(f"[subscription] Expected: Valid JSON object with 'name', 'email', 'subscribedAt'")
+              print(f"[subscription] Received: {json_data}")
+              sys.exit(1)
+          
+          email = subscriber_data.get('email', '').lower().strip()
+          name = subscriber_data.get('name', 'Subscriber').strip()
+          
+          if not email:
+              print(f"[subscription] ERROR: No email address found")
+              print(f"[subscription] Expected: Non-empty 'email' field")
+              print(f"[subscription] Received: email = '{subscriber_data.get('email', '')}'")
+              sys.exit(1)
+          
+          if not name:
+              print(f"[subscription] WARNING: No name found, using default 'Subscriber'")
+          
+          print(f"[subscription] Processing subscription for: {email} (Name: {name})")
           
           # Read existing subscribers
           try:
               with open('subscribers.json', 'r') as f:
                   subscribers = json.load(f)
+              print(f"[subscription] SUCCESS: Loaded {len(subscribers)} existing subscribers")
           except FileNotFoundError:
+              print(f"[subscription] INFO: No existing subscribers.json, creating new file")
+              subscribers = []
+          except json.JSONDecodeError as e:
+              print(f"[subscription] ERROR: subscribers.json is corrupted")
+              print(f"[subscription] JSONDecodeError: {str(e)}")
+              print(f"[subscription] Creating new subscribers list")
               subscribers = []
           
           # Check if email already exists
-          existing = [s for s in subscribers if s.get('email', '').lower() == email]
+          existing = [s for s in subscribers if s.get('email', '').lower().strip() == email]
           
           if existing:
-              print(f"[subscription] Email {email} already subscribed, updating...")
+              print(f"[subscription] INFO: Email {email} already subscribed, updating existing entry")
               for i, sub in enumerate(subscribers):
-                  if sub.get('email', '').lower() == email:
+                  if sub.get('email', '').lower().strip() == email:
+                      print(f"[subscription] Old data: {json.dumps(sub, indent=2)}")
                       subscribers[i] = subscriber_data
+                      print(f"[subscription] New data: {json.dumps(subscriber_data, indent=2)}")
                       break
           else:
-              print(f"[subscription] Adding new subscriber: {email}")
+              print(f"[subscription] INFO: Adding new subscriber: {email}")
               subscribers.append(subscriber_data)
           
           # Write back to file
-          with open('subscribers.json', 'w') as f:
-              json.dump(subscribers, f, indent=2)
+          try:
+              with open('subscribers.json', 'w') as f:
+                  json.dump(subscribers, f, indent=2)
+              print(f"[subscription] SUCCESS: Updated subscribers.json")
+          except Exception as e:
+              print(f"[subscription] ERROR: Failed to write subscribers.json")
+              print(f"[subscription] Exception: {str(e)}")
+              print(f"[subscription] Exception type: {type(e).__name__}")
+              sys.exit(1)
           
           print(f"[subscription] Total subscribers: {len(subscribers)}")
+          print(f"[subscription] Subscription processing complete")
           EOF
 
       - name: Commit subscriber update
         run: |
+          echo "[commit] Configuring git"
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          
+          echo "[commit] Staging subscribers.json"
           git add subscribers.json
-          git commit -m "Add newsletter subscriber: ${{ github.event.client_payload.subscriber.name || github.event.inputs.subscriber_name }}" || echo "No changes"
-          git push
+          
+          echo "[commit] Checking for changes"
+          if git diff --staged --quiet; then
+            echo "[commit] INFO: No changes to commit"
+          else
+            echo "[commit] Committing changes"
+            git commit -m "Add newsletter subscriber: ${{ github.event.issue.title }}"
+            
+            echo "[commit] Pushing changes"
+            git push
+            echo "[commit] SUCCESS: Changes pushed to repository"
+          fi
+
+      - name: Close issue with success comment
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.WORKHUB_GH_PAT }}
+          script: |
+            console.log('[issue] Closing issue and adding success comment');
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: '✅ **Subscription processed successfully!**\n\nThe subscriber has been added to the list and will receive a confirmation email shortly.'
+            });
+            
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              state: 'closed'
+            });
+            
+            console.log('[issue] SUCCESS: Issue closed with comment');
 
       - name: Send confirmation email
         env:
@@ -126,17 +193,39 @@ jobs:
           from email.mime.text import MIMEText
           from email.mime.multipart import MIMEMultipart
           import os
+          import sys
           
-          # Get subscriber data
-          subscriber_json = """${{ steps.extract.outputs.subscriber_json }}"""
-          subscriber = json.loads(subscriber_json)
+          print("[email] Starting email sending process")
           
-          email = subscriber.get('email')
-          name = subscriber.get('name', 'Subscriber')
+          # Extract subscriber data from issue body
+          issue_body = """${{ github.event.issue.body }}"""
+          
+          print(f"[email] Issue body length: {len(issue_body)}")
+          
+          # Find JSON block in issue body
+          try:
+              json_start = issue_body.find('```json') + 7
+              json_end = issue_body.find('```', json_start)
+              json_str = issue_body[json_start:json_end].strip()
+              subscriber = json.loads(json_str)
+              print(f"[email] SUCCESS: Parsed subscriber data")
+              print(f"[email] Subscriber: {json.dumps(subscriber, indent=2)}")
+          except Exception as e:
+              print(f"[email] ERROR: Failed to extract subscriber data from issue")
+              print(f"[email] Exception: {str(e)}")
+              print(f"[email] Exception type: {type(e).__name__}")
+              sys.exit(0)  # Don't fail the workflow, just skip email
+          
+          email = subscriber.get('email', '').strip()
+          name = subscriber.get('name', 'Subscriber').strip()
           
           if not email:
-              print("[email] No email address found")
-              exit(0)
+              print("[email] WARNING: No email address found, skipping email")
+              print(f"[email] Expected: Non-empty 'email' field")
+              print(f"[email] Received: email = '{subscriber.get('email', '')}'")
+              sys.exit(0)
+          
+          print(f"[email] Preparing to send email to: {email} (Name: {name})")
           
           # Email configuration
           smtp_server = os.getenv('SMTP_SERVER', 'smtp-mail.outlook.com')
@@ -146,8 +235,15 @@ jobs:
           from_email = os.getenv('FROM_EMAIL', smtp_user)
           
           if not smtp_user or not smtp_password:
-              print("[email] SMTP credentials not configured, skipping email")
-              exit(0)
+              print("[email] WARNING: SMTP credentials not configured, skipping email")
+              print(f"[email] SMTP_USER configured: {bool(smtp_user)}")
+              print(f"[email] SMTP_PASSWORD configured: {bool(smtp_password)}")
+              sys.exit(0)
+          
+          print(f"[email] SMTP configuration:")
+          print(f"[email]   Server: {smtp_server}:{smtp_port}")
+          print(f"[email]   User: {smtp_user}")
+          print(f"[email]   From: {from_email}")
           
           # Create email
           msg = MIMEMultipart('alternative')
@@ -156,11 +252,11 @@ jobs:
           msg['To'] = email
           
           text = f"""Hi {name},
-          
+
 Thank you for subscribing to our newsletter! You'll now receive updates about company events, news, and important announcements.
-          
+
 If you have any questions, please don't hesitate to reach out.
-          
+
 Best regards,
 Work Hub Team"""
           
@@ -182,14 +278,35 @@ Work Hub Team"""
           
           # Send email
           try:
-              print(f"[email] Sending confirmation email to {email}")
+              print(f"[email] Connecting to SMTP server: {smtp_server}:{smtp_port}")
               server = smtplib.SMTP(smtp_server, smtp_port)
+              
+              print(f"[email] Starting TLS")
               server.starttls()
+              
+              print(f"[email] Authenticating as: {smtp_user}")
               server.login(smtp_user, smtp_password)
+              
+              print(f"[email] Sending message to: {email}")
               server.send_message(msg)
+              
+              print(f"[email] Closing connection")
               server.quit()
-              print(f"[email] Confirmation email sent successfully")
+              
+              print(f"[email] SUCCESS: Confirmation email sent to {email}")
+          except smtplib.SMTPAuthenticationError as e:
+              print(f"[email] ERROR: SMTP authentication failed")
+              print(f"[email] Exception: {str(e)}")
+              print(f"[email] Check SMTP_USER and SMTP_PASSWORD secrets")
+              sys.exit(1)
+          except smtplib.SMTPException as e:
+              print(f"[email] ERROR: SMTP error occurred")
+              print(f"[email] Exception: {str(e)}")
+              print(f"[email] Exception type: {type(e).__name__}")
+              sys.exit(1)
           except Exception as e:
-              print(f"[email] Error sending email: {e}")
-              exit(1)
+              print(f"[email] ERROR: Unexpected error sending email")
+              print(f"[email] Exception: {str(e)}")
+              print(f"[email] Exception type: {type(e).__name__}")
+              sys.exit(1)
           EOF
