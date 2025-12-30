@@ -1030,24 +1030,28 @@ async function handleNewsletterSignup(event) {
         console.log('[newsletter] Full form data:', JSON.stringify(formData, null, 2));
         
         const GITHUB_REPO = 'x0bi3/Work-Hub';
-        const GITHUB_TOKEN = localStorage.getItem('github_token');
+        const GITHUB_WORKFLOW = 'form-handler.yml';
+        const GITHUB_BRANCH = 'main';
         
-        console.log('[newsletter] Triggering GitHub Actions webhook');
+        console.log('[newsletter] Triggering GitHub Actions workflow_dispatch');
         console.log('[newsletter] Repository:', GITHUB_REPO);
+        console.log('[newsletter] Workflow:', GITHUB_WORKFLOW);
+        console.log('[newsletter] Form data:', JSON.stringify(formData, null, 2));
         
-        // Use repository_dispatch to trigger GitHub Actions workflow
-        // This is the secure way to handle subscriptions without exposing a token in the frontend
-        const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/dispatches`, {
+        // Trigger GitHub Actions workflow via workflow_dispatch
+        // This is the native GitHub way to run workflows from external sources
+        const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/${GITHUB_WORKFLOW}/dispatches`, {
             method: 'POST',
             headers: {
-                'Accept': 'application/vnd.github.v3+json',
-                'Content-Type': 'application/json',
-                ...(GITHUB_TOKEN && { 'Authorization': `token ${GITHUB_TOKEN}` })
+                'Accept': 'application/vnd.github+json',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                event_type: 'newsletter-subscription',
-                client_payload: {
-                    subscriber: formData
+                ref: GITHUB_BRANCH,
+                inputs: {
+                    name: formData.name,
+                    email: formData.email,
+                    subscribedAt: formData.subscribedAt
                 }
             })
         });
