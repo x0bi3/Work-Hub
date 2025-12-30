@@ -996,107 +996,129 @@
                 </div>
             `).join('');
         }
+async function handleNewsletterSignup(event) {
+    event.preventDefault();
+    const form = event.target;
+    const submitBtn = document.getElementById('submit-btn');
+    const messageDiv = document.getElementById('newsletter-message');
+    
+    const formData = {
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        subscribedAt: new Date().toISOString()
+    };
 
-        // Newsletter subscription handler - No user configuration required
-        async function handleNewsletterSignup(event) {
-            event.preventDefault();
-            const form = event.target;
-            const submitBtn = document.getElementById('submit-btn');
-            const messageDiv = document.getElementById('newsletter-message');
+    // Validate
+    if (!formData.name || !formData.email) {
+        console.error('[newsletter] ERROR: Validation failed - Missing name or email');
+        console.error('[newsletter] Expected: Both name and email to be non-empty strings');
+        console.error('[newsletter] Received: name =', formData.name, 'email =', formData.email);
+        messageDiv.className = 'message error';
+        messageDiv.textContent = 'Please fill in both name and email fields.';
+        messageDiv.style.display = 'block';
+        return;
+    }
+
+    // Disable submit button
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Subscribing...';
+    messageDiv.className = 'message';
+    messageDiv.style.display = 'none';
+
+    try {
+        console.log('[newsletter] Submitting subscription:', formData.email);
+        console.log('[newsletter] Full form data:', JSON.stringify(formData, null, 2));
+        
+        const GITHUB_REPO = 'x0bi3/Work-Hub';
+        
+        console.log('[newsletter] Creating GitHub Issue (public API - no auth needed)');
+        console.log('[newsletter] Repository:', GITHUB_REPO);
+        
+        // Create a GitHub Issue - This uses the PUBLIC Issues API
+        // No authentication required for creating issues on public repos
+        const issueBody = `**New Newsletter Subscription**\n\n` +
+            `- **Name:** ${formData.name}\n` +
+            `- **Email:** ${formData.email}\n` +
+            `- **Subscribed At:** ${formData.subscribedAt}\n\n` +
+            `---\n\n` +
+            `\`\`\`json\n${JSON.stringify(formData, null, 2)}\n\`\`\``;
+        
+        const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/issues`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title: `Newsletter Subscription: ${formData.name}`,
+                body: issueBody,
+                labels: ['newsletter-subscription']
+            })
+        });
+        
+        const responseText = await response.text();
+        console.log('[newsletter] Response status:', response.status);
+        console.log('[newsletter] Response headers:', JSON.stringify([...response.headers.entries()], null, 2));
+        console.log('[newsletter] Response body:', responseText);
+        
+        if (!response.ok) {
+            let errorMessage = 'Failed to submit subscription';
             
-            const formData = {
-                name: document.getElementById('name').value.trim(),
-                email: document.getElementById('email').value.trim(),
-                subscribedAt: new Date().toISOString()
-            };
-
-            // Validate
-            if (!formData.name || !formData.email) {
-                messageDiv.className = 'message error';
-                messageDiv.textContent = 'Please fill in both name and email fields.';
-                messageDiv.style.display = 'block';
-                return;
-            }
-
-            // Disable submit button
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Subscribing...';
-            messageDiv.className = 'message';
-            messageDiv.style.display = 'none';
-
-            try {
-                print('[newsletter] Submitting subscription:', formData.email);
-                
-                // Trigger GitHub Action workflow via repository_dispatch
-                // Uses WORKHUB_GH_PAT token to trigger workflow
-                // Workflow handles issue creation and subscription processing server-side
-                const DISPATCH_TOKEN = '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';
-                
-                const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/dispatches`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Authorization': `Bearer ${DISPATCH_TOKEN}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        event_type: 'newsletter-subscription',
-                        client_payload: {
-                            subscriber: formData
-                        }
-                    })
-                });
-                
-                const responseText = await response.text();
-                print('[newsletter] Response status:', response.status);
-                print('[newsletter] Response:', responseText);
-                
-                if (!response.ok) {
-                    let errorMessage = 'Failed to submit subscription';
-                    try {
-                        const errorData = JSON.parse(responseText);
-                        errorMessage = errorData.message || errorMessage;
-                    } catch (e) {
-                        errorMessage = responseText || errorMessage;
-                    }
-                    throw new Error(errorMessage);
+            // Check if authentication is required
+            if (response.status === 401 || response.status === 403) {
+                console.error('[newsletter] ERROR: Authentication required');
+                console.error('[newsletter] This means your repository requires authentication to create issues');
+                console.error('[newsletter] Solution: Enable "Issues" feature in repository settings');
+                errorMessage = 'Repository configuration error. Please enable Issues in repository settings.';
+            } else {
+                try {
+                    const errorData = JSON.parse(responseText);
+                    errorMessage = errorData.message || errorMessage;
+                    console.error('[newsletter] ERROR: API request failed');
+                    console.error('[newsletter] Status:', response.status, response.statusText);
+                    console.error('[newsletter] Error message:', errorMessage);
+                    console.error('[newsletter] Full error data:', JSON.stringify(errorData, null, 2));
+                } catch (e) {
+                    errorMessage = responseText || errorMessage;
+                    console.error('[newsletter] ERROR: Failed to parse error response');
+                    console.error('[newsletter] Raw response:', responseText);
                 }
-
-                print('[newsletter] Subscription submitted successfully');
-                
-                // Show success message
-                messageDiv.className = 'message success';
-                messageDiv.textContent = `Thank you ${formData.name}! Your subscription has been submitted. You'll receive a confirmation email shortly.`;
-                messageDiv.style.display = 'block';
-                
-                // Reset form
-                form.reset();
-                
-                // Scroll to message
-                messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                
-            } catch (error) {
-                print('[newsletter] Error submitting subscription:', error.message);
-                log('Newsletter subscription error', { error: error.message, formData });
-                
-                messageDiv.className = 'message error';
-                messageDiv.textContent = `Sorry, there was an error submitting your subscription: ${error.message}. Please try again later or contact support.`;
-                messageDiv.style.display = 'block';
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Subscribe Now';
             }
+            throw new Error(errorMessage);
         }
 
-        // Helper functions for logging
-        function print(message, ...args) {
-            console.log(message, ...args);
-        }
-
-        function log(message, data) {
-            console.error('[LOG]', message, data);
-        }
-
+        const issueData = JSON.parse(responseText);
+        console.log('[newsletter] SUCCESS: Issue created successfully');
+        console.log('[newsletter] Issue number:', issueData.number);
+        console.log('[newsletter] Issue URL:', issueData.html_url);
+        console.log('[newsletter] GitHub Actions will now process this subscription using WORKHUB_GH_PAT secret');
+        
+        // Show success message
+        messageDiv.className = 'message success';
+        messageDiv.textContent = `Thank you ${formData.name}! Your subscription has been submitted. You'll receive a confirmation email shortly.`;
+        messageDiv.style.display = 'block';
+        
+        // Reset form
+        form.reset();
+        
+        // Scroll to message
+        messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+    } catch (error) {
+        console.error('[newsletter] EXCEPTION: Subscription submission failed');
+        console.error('[newsletter] Error type:', error.constructor.name);
+        console.error('[newsletter] Error message:', error.message);
+        console.error('[newsletter] Error stack:', error.stack);
+        console.error('[newsletter] Form data attempted:', JSON.stringify(formData, null, 2));
+        
+        messageDiv.className = 'message error';
+        messageDiv.textContent = `Sorry, there was an error submitting your subscription: ${error.message}. Please try again later or contact support.`;
+        messageDiv.style.display = 'block';
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Subscribe Now';
+    }
+}
         // Initialize on load
         init();
     </script>
