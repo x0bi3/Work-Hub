@@ -1031,26 +1031,28 @@
                 print('[newsletter] Form data:', JSON.stringify(formData, null, 2));
                 
                 // Get public token for form submissions
-                // This token has minimal permissions (only public_repo scope)
-                // It's safe to expose because it can only create issues, not access sensitive data
-                const PUBLIC_FORM_TOKEN = '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';
+                // Priority: 1) localStorage, 2) hardcoded token (for testing)
+                // This token needs 'repo' or 'public_repo' scope to create issues
+                const PUBLIC_FORM_TOKEN = localStorage.getItem('github_token') || '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';
                 
                 // Try to create a GitHub Issue
                 print('[newsletter] Attempting to create GitHub Issue...');
                 print('[newsletter] Repository:', GITHUB_REPO);
-                print('[newsletter] Using token:', PUBLIC_FORM_TOKEN ? 'Yes (configured)' : 'No (will try unauthenticated)');
+                print('[newsletter] Token source:', localStorage.getItem('github_token') ? 'localStorage' : 'hardcoded');
+                print('[newsletter] Token configured:', PUBLIC_FORM_TOKEN ? 'Yes' : 'No');
+                print('[newsletter] Token preview:', PUBLIC_FORM_TOKEN ? PUBLIC_FORM_TOKEN.substring(0, 10) + '...' : 'None');
                 
                 const headers = {
                     'Accept': 'application/vnd.github.v3+json',
                     'Content-Type': 'application/json'
                 };
                 
-                // Add authorization if token is configured
+                // Add authorization if token is configured (use Bearer for modern GitHub API)
                 if (PUBLIC_FORM_TOKEN) {
-                    headers['Authorization'] = `token ${PUBLIC_FORM_TOKEN}`;
-                    print('[newsletter] Using authenticated request');
+                    headers['Authorization'] = `Bearer ${PUBLIC_FORM_TOKEN}`;
+                    print('[newsletter] Using authenticated request with Bearer token');
                 } else {
-                    print('[newsletter] Using unauthenticated request (may fail)');
+                    print('[newsletter] Using unauthenticated request (will fail - token required)');
                 }
                 
                 const issueBody = {
