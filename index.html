@@ -997,6 +997,8 @@
             `).join('');
         }
 
+        // Newsletter subscription handler - Updated 2025-12-30
+        // No user configuration required - uses server-side GitHub Actions
         async function handleNewsletterSignup(event) {
             event.preventDefault();
             const form = event.target;
@@ -1027,8 +1029,8 @@
                 print('[newsletter] Submitting subscription:', formData.email);
                 
                 // Trigger GitHub Action workflow via repository_dispatch
-                // Note: This requires a token with 'repo' scope to trigger repository_dispatch
-                // The workflow will use WORKHUB_GH_PAT secret to create issues and process subscriptions
+                // Uses WORKHUB_GH_PAT token to trigger workflow
+                // Workflow handles issue creation and subscription processing server-side
                 const DISPATCH_TOKEN = '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';
                 
                 const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/dispatches`, {
@@ -1048,6 +1050,7 @@
                 
                 const responseText = await response.text();
                 print('[newsletter] Response status:', response.status);
+                print('[newsletter] Response:', responseText);
                 
                 if (!response.ok) {
                     let errorMessage = 'Failed to submit subscription';
@@ -1057,7 +1060,7 @@
                     } catch (e) {
                         errorMessage = responseText || errorMessage;
                     }
-                    throw new Error(`Subscription failed: ${errorMessage}`);
+                    throw new Error(errorMessage);
                 }
 
                 print('[newsletter] Subscription submitted successfully');
@@ -1078,7 +1081,7 @@
                 log('Newsletter subscription error', { error: error.message, formData });
                 
                 messageDiv.className = 'message error';
-                messageDiv.textContent = `Sorry, there was an error submitting your subscription. Please try again later or contact support.`;
+                messageDiv.textContent = `Sorry, there was an error submitting your subscription: ${error.message}. Please try again later or contact support.`;
                 messageDiv.style.display = 'block';
             } finally {
                 submitBtn.disabled = false;
