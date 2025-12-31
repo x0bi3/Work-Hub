@@ -817,25 +817,156 @@
             { date: 1, month: 2, title: 'Q1 Review', description: 'Q1 Performance reviews begin' }
         ];
 
-        // Newsletter Data
-        const newsletters = [
-            { date: 'Dec 20, 2024', title: 'December Holiday Edition', preview: 'Holiday tips, party info, and year-end updates' },
-            { date: 'Dec 13, 2024', title: 'New Benefits Announcement', preview: 'Details about our expanded benefits package' },
-            { date: 'Dec 6, 2024', title: 'Team Recognition Spotlight', preview: 'Celebrating our outstanding team members' },
-            { date: 'Nov 29, 2024', title: 'Q4 Initiatives', preview: 'Overview of Q4 company initiatives' },
-            { date: 'Nov 22, 2024', title: 'Training Opportunities', preview: 'New training programs and certifications available' }
-        ];
+        // Newsletter Data (will be populated from GitHub)
+        let newsletters = [];
 
         // Initialize
         let currentMonth = new Date();
         let currentSlide = 0;
 
-        function init() {
+        /**
+         * Fetch newsletters from GitHub repository
+         * Recursively finds all .html files in /newsletters/ folder
+         */
+        async function fetchNewslettersFromGitHub() {
+            try {
+                // First, show some feedback to the user
+                const container = document.getElementById('newsletter-items');
+                container.innerHTML = '<p style="color: var(--text-light);">Loading newsletters...</p>';
+                
+                const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/newsletters?ref=${GITHUB_BRANCH}`;
+                console.log('📰 Fetching newsletters from:', apiUrl);
+                
+                // Recursively fetch all newsletter files
+                const fetchDir = async (path, depth = 0) => {
+                    console.log(`  ${'  '.repeat(depth)}Scanning: ${path}`);
+                    const response = await fetch(path);
+                    
+                    if (!response.ok) {
+                        console.warn(`  ${'  '.repeat(depth)}❌ API returned ${response.status}`);
+                        return [];
+                    }
+                    
+                    const contents = await response.json();
+                    console.log(`  ${'  '.repeat(depth)}Found ${contents.length} items`);
+                    
+                    let files = [];
+                    
+                    for (const item of contents) {
+                        if (item.type === 'dir') {
+                            console.log(`  ${'  '.repeat(depth)}📁 Directory: ${item.name}`);
+                            // Recursively fetch subdirectories
+                            const subFiles = await fetchDir(item.url, depth + 1);
+                            files = files.concat(subFiles);
+                        } else if (item.name.endsWith('.html')) {
+                            console.log(`  ${'  '.repeat(depth)}📄 Newsletter: ${item.name}`);
+                            files.push(item);
+                        }
+                    }
+                    return files;
+                };
+                
+                const files = await fetchDir(apiUrl);
+                console.log(`✅ Found ${files.length} newsletter files total`);
+                
+                // Parse each newsletter file
+                const parsed = [];
+                for (const file of files) {
+                    try {
+                        console.log(`  Parsing: ${file.name}`);
+                        const contentResponse = await fetch(file.download_url);
+                        if (!contentResponse.ok) {
+                            console.warn(`  ❌ Failed to fetch ${file.name}`);
+                            continue;
+                        }
+                        
+                        const htmlContent = await contentResponse.text();
+                        const newsletter = parseNewsletter(htmlContent);
+                        console.log(`  Title: ${newsletter.title}, Status: ${newsletter.status}`);
+                        
+                        // Only show published newsletters
+                        if (newsletter.status === 'published') {
+                            parsed.push(newsletter);
+                        } else {
+                            console.log(`  (Skipped - status is '${newsletter.status}', not 'published')`);
+                        }
+                    } catch (e) {
+                        console.error(`  Error parsing ${file.name}:`, e);
+                    }
+                }
+                
+                // Sort by publish date (newest first)
+                parsed.sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate));
+                newsletters = parsed;
+                
+                console.log(`✅ Loaded ${newsletters.length} published newsletters:`, newsletters);
+            } catch (error) {
+                console.error('❌ Error fetching newsletters from GitHub:', error);
+                console.error('Full error details:', JSON.stringify(error, null, 2));
+                // Show error message to user
+                const container = document.getElementById('newsletter-items');
+                container.innerHTML = `<p style="color: var(--danger);">⚠️ Error loading newsletters: ${error.message}</p>
+                    <p style="color: var(--text-light); font-size: 0.9rem;">Please check the browser console for details.</p>`;
+                // Fall back to empty array if fetch fails
+                newsletters = [];
+            }
+        }
+
+        /**
+         * Parse newsletter HTML to extract metadata and preview
+         */
+        function parseNewsletter(htmlContent) {
+            // Extract metadata from HTML comment block
+            const metaMatch = htmlContent.match(/<!--\s*({.*?})\s*-->/s);
+            let metadata = {
+                title: 'Untitled Newsletter',
+                publishDate: new Date().toISOString().split('T')[0],
+                status: 'draft',
+                tags: []
+            };
+
+            if (metaMatch) {
+                try {
+                    metadata = JSON.parse(metaMatch[1]);
+                } catch (e) {
+                    console.warn('Failed to parse newsletter metadata', e);
+                }
+            }
+
+            // Extract body and create preview (first 150 chars)
+            const bodyStart = metaMatch ? metaMatch[0].length : 0;
+            const body = htmlContent.substring(bodyStart).trim();
+            const plainText = body.replace(/<[^>]*>/g, '').trim();
+            const preview = plainText.substring(0, 150) + (plainText.length > 150 ? '...' : '');
+
+            // Format date
+            const date = new Date(metadata.publishDate);
+            const formattedDate = date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+
+            return {
+                title: metadata.title,
+                date: formattedDate,
+                preview: preview,
+                content: body,
+                publishDate: metadata.publishDate,
+                status: metadata.status,
+                tags: metadata.tags || []
+            };
+        }
+
+        async function init() {
             renderFAQ('all');
             renderCarousel();
             loadCarouselContent('slide1');
             renderCalendar();
             renderEvents();
+            
+            // Fetch newsletters from GitHub
+            await fetchNewslettersFromGitHub();
             renderNewsletters();
         }
 
@@ -988,13 +1119,37 @@
         // Newsletter Functions
         function renderNewsletters() {
             const container = document.getElementById('newsletter-items');
-            container.innerHTML = newsletters.map(letter => `
+            
+            if (newsletters.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-light);">No newsletters available yet.</p>';
+                return;
+            }
+            
+            container.innerHTML = newsletters.map((letter, idx) => `
                 <div class="newsletter-item">
                     <h4>${letter.title}</h4>
                     <div class="date">${letter.date}</div>
                     <p style="margin-top: 0.5rem;">${letter.preview}</p>
+                    <button class="view-newsletter-btn" onclick="viewNewsletter(${idx})" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer;">View Newsletter</button>
                 </div>
             `).join('');
+        }
+        
+        function viewNewsletter(index) {
+            const letter = newsletters[index];
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 1rem;';
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 8px; padding: 2rem; max-width: 800px; max-height: 80vh; overflow-y: auto; position: relative;">
+                    <button onclick="this.closest('div').parentElement.remove()" style="position: absolute; top: 1rem; right: 1rem; border: none; background: none; font-size: 1.5rem; cursor: pointer;">×</button>
+                    <h2>${letter.title}</h2>
+                    <div style="color: var(--text-light); margin-bottom: 1.5rem;">${letter.date}</div>
+                    <div style="border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                        ${letter.content}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
 async function handleNewsletterSignup(event) {
     event.preventDefault();
