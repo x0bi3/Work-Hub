@@ -1,0 +1,13 @@
+{
+  "id": "nl_2tiuuo718_1767199596407",
+  "title": "Test newsletter",
+  "content": "yada yada, badada badada",
+  "publishDate": "2025-12-31",
+  "status": "published",
+  "tags": [
+    "test",
+    "newsletter"
+  ],
+  "createdAt": "2025-12-31T16:46:36.407Z",
+  "updatedAt": "2025-12-31T16:54:27.831Z"
+}
