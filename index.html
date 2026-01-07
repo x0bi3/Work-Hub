@@ -826,7 +826,8 @@
 
         /**
          * Fetch newsletters from GitHub repository
-         * Recursively finds all .html files in /newsletters/ folder
+         * Loads from newsletters/manifest.json (auto-updated by admin panel)
+         * Falls back to GitHub API if manifest not available
          */
         async function fetchNewslettersFromGitHub() {
             try {
@@ -834,39 +835,47 @@
                 const container = document.getElementById('newsletter-items');
                 container.innerHTML = '<p style="color: var(--text-light);">Loading newsletters...</p>';
                 
-                // Try to load from a cached newsletters.json file first (faster fallback)
                 console.log('📰 Attempting to load newsletters...');
                 
+                // Try to load from the newsletter manifest (primary source)
                 try {
-                    console.log('📄 Trying to load from cached newsletters-index.json...');
-                    const indexResponse = await fetch('newsletters-index.json');
-                    if (indexResponse.ok) {
-                        const index = await indexResponse.json();
-                        console.log('✅ Loaded from cached index:', index);
+                    const manifestUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/newsletters/manifest.json`;
+                    console.log('📄 Loading from newsletter manifest:', manifestUrl);
+                    const manifestResponse = await fetch(manifestUrl);
+                    
+                    if (manifestResponse.ok) {
+                        const manifest = await manifestResponse.json();
+                        console.log('✅ Loaded manifest with', manifest.newsletters.length, 'entries');
                         
+                        // Filter to only published newsletters and fetch their content
+                        const published = manifest.newsletters.filter(n => n.status === 'published');
                         const parsed = [];
-                        for (const file of index) {
+                        
+                        for (const entry of published) {
                             try {
-                                const contentResponse = await fetch(file.download_url);
+                                const contentUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/${entry.path}`;
+                                const contentResponse = await fetch(contentUrl);
                                 if (contentResponse.ok) {
                                     const htmlContent = await contentResponse.text();
                                     const newsletter = parseNewsletter(htmlContent);
-                                    if (newsletter.status === 'published') {
-                                        parsed.push(newsletter);
-                                    }
+                                    // Use manifest metadata as fallback
+                                    newsletter.title = newsletter.title || entry.title;
+                                    newsletter.publishDate = newsletter.publishDate || entry.publishDate;
+                                    newsletter.tags = newsletter.tags.length ? newsletter.tags : (entry.tags || []);
+                                    parsed.push(newsletter);
                                 }
                             } catch (e) {
-                                console.warn(`Failed to fetch ${file.name}:`, e);
+                                console.warn(`Failed to fetch ${entry.title}:`, e);
                             }
                         }
                         
                         parsed.sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate));
                         newsletters = parsed;
-                        console.log(`✅ Loaded ${newsletters.length} published newsletters from cache`);
+                        console.log(`✅ Loaded ${newsletters.length} published newsletters from manifest`);
                         return; // Success - exit early
                     }
                 } catch (e) {
-                    console.log('📋 Cache not available, trying GitHub API...');
+                    console.log('📋 Manifest not available, trying GitHub API...', e);
                 }
                 
                 const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/newsletters?ref=${GITHUB_BRANCH}`;
