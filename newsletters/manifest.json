@@ -1,6 +1,16 @@
 {
   "newsletters": [
     {
+      "id": "nl_uo0ky3sb3_1767887823929",
+      "title": "New Newsletter",
+      "slug": "new-newsletter",
+      "path": "newsletters/2026/01/new-newsletter.html",
+      "status": "published",
+      "publishDate": "2026-01-08",
+      "tags": [],
+      "updatedAt": "2026-01-08T15:57:03.930Z"
+    },
+    {
       "id": "nl_avz5pwylf_1767813446605",
       "title": "1moretest",
       "slug": "1moretest",
@@ -52,5 +62,5 @@
       "updatedAt": "2026-01-07T15:27:51.030Z"
     }
   ],
-  "lastUpdated": "2026-01-08T15:35:19.252Z"
+  "lastUpdated": "2026-01-08T15:57:05.119Z"
 }
