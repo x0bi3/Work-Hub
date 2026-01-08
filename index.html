@@ -730,14 +730,59 @@
             }
         }
 
-        // Calendar Events Data
-        const calendarEvents = [
-            { date: 15, month: 0, title: 'Team Building Day', description: 'Join us for an afternoon of team activities' },
-            { date: 20, month: 0, title: 'Training Workshop', description: 'Professional development workshop' },
-            { date: 5, month: 1, title: 'All Hands Meeting', description: 'Company-wide all hands meeting' },
-            { date: 14, month: 1, title: 'Holiday Party', description: 'Annual company holiday celebration' },
-            { date: 1, month: 2, title: 'Q1 Review', description: 'Q1 Performance reviews begin' }
-        ];
+        // Calendar Events Data (loaded from GitHub)
+        let calendarEvents = [];
+
+        /**
+         * Fetch calendar events from GitHub repository
+         * Loads from events/manifest.json (auto-updated by admin panel)
+         */
+        async function fetchEventsFromGitHub() {
+            console.log('📅 Loading events from GitHub...');
+            
+            // Cache buster to ensure fresh data
+            const cacheBuster = `?t=${Date.now()}`;
+            
+            try {
+                const manifestUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/events/manifest.json${cacheBuster}`;
+                console.log('📄 Loading from events manifest:', manifestUrl);
+                const manifestResponse = await fetch(manifestUrl, { cache: 'no-store' });
+                
+                if (!manifestResponse.ok) {
+                    console.log('📅 No events manifest found, using empty events list');
+                    calendarEvents = [];
+                    return;
+                }
+                
+                const manifest = await manifestResponse.json();
+                console.log('✅ Loaded events manifest with', manifest.events.length, 'entries');
+                
+                // Filter to only active events and transform for calendar display
+                calendarEvents = manifest.events
+                    .filter(e => e.status === 'active')
+                    .map(e => {
+                        const startDate = new Date(e.startDate);
+                        return {
+                            id: e.id,
+                            date: startDate.getDate(),
+                            month: startDate.getMonth(),
+                            year: startDate.getFullYear(),
+                            title: e.title,
+                            description: e.description || '',
+                            location: e.location || '',
+                            startDate: e.startDate,
+                            endDate: e.endDate,
+                            eventType: e.eventType || 'single'
+                        };
+                    });
+                
+                console.log('✅ Loaded', calendarEvents.length, 'calendar events');
+                
+            } catch (error) {
+                console.error('❌ Failed to load events:', error);
+                calendarEvents = [];
+            }
+        }
 
         // Newsletter Data (will be populated from GitHub)
         let newsletters = [];
@@ -934,7 +979,8 @@
             await Promise.all([
                 fetchFAQFromGitHub(),
                 fetchTMYKFromGitHub(),
-                fetchNewslettersFromGitHub()
+                fetchNewslettersFromGitHub(),
+                fetchEventsFromGitHub()
             ]);
             
             // Render all sections
@@ -1041,7 +1087,7 @@
             
             // Current month days
             for (let i = 1; i <= lastDay.getDate(); i++) {
-                const hasEvent = calendarEvents.some(e => e.date === i && e.month === month);
+                const hasEvent = calendarEvents.some(e => e.date === i && e.month === month && e.year === year);
                 html += `<div class="day ${hasEvent ? 'has-event' : ''}" onclick="selectDate(${i})">${i}</div>`;
             }
             
@@ -1064,14 +1110,17 @@
         }
 
         function selectDate(day) {
-            const events = calendarEvents.filter(e => e.date === day && e.month === currentMonth.getMonth());
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            const events = calendarEvents.filter(e => e.date === day && e.month === month && e.year === year);
             const list = document.getElementById('events-items');
             
             if (events.length > 0) {
                 list.innerHTML = events.map((e, idx) => `
                     <div class="event-item active">
                         <h4>${e.title}</h4>
-                        <p>📅 ${currentMonth.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
+                        <p>📅 ${new Date(year, month, day).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                        ${e.location ? `<p>📍 ${e.location}</p>` : ''}
                         <p>${e.description}</p>
                     </div>
                 `).join('');
@@ -1080,21 +1129,42 @@
 
         function renderEvents() {
             const list = document.getElementById('events-items');
-            list.innerHTML = calendarEvents.map(e => {
-                const eventDate = new Date(currentMonth.getFullYear(), e.month, e.date);
+            const now = new Date();
+            
+            // Filter to show only upcoming events, sorted by date
+            const upcomingEvents = calendarEvents
+                .filter(e => new Date(e.startDate) >= now)
+                .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
+                .slice(0, 10);
+            
+            if (upcomingEvents.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-light); padding: 1rem;">No upcoming events</p>';
+                return;
+            }
+            
+            list.innerHTML = upcomingEvents.map(e => {
+                const eventDate = new Date(e.startDate);
                 return `
-                    <div class="event-item" onclick="selectDateFromEvent(${e.date})">
+                    <div class="event-item" onclick="selectDateFromEvent(${e.date}, ${e.month}, ${e.year})">
                         <h4>${e.title}</h4>
-                        <p>📅 ${eventDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                        <p>📅 ${eventDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                        ${e.location ? `<p>📍 ${e.location}</p>` : ''}
                         <p>${e.description}</p>
                     </div>
                 `;
             }).join('');
         }
 
-        function selectDateFromEvent(day) {
+        function selectDateFromEvent(day, month, year) {
             document.querySelectorAll('.event-item').forEach(item => item.classList.remove('active'));
             event.currentTarget.classList.add('active');
+            
+            // Navigate to the correct month/year if needed
+            if (month !== undefined && year !== undefined) {
+                currentMonth = new Date(year, month, 1);
+                renderCalendar();
+            }
+            
             selectDate(day);
         }
 
