@@ -1,0 +1,9 @@
+{
+  "id": "faq_audit_freq",
+  "category": "auditing",
+  "question": "How often will I be audited?",
+  "answer": "Audit frequency varies by department and role. Most departments undergo audits quarterly. You'll receive notification before an audit occurs.",
+  "order": 2,
+  "createdAt": "2026-01-07T00:00:00.000Z",
+  "updatedAt": "2026-01-07T00:00:00.000Z"
+}
