@@ -1,10 +1,10 @@
 {
   "id": "tmyk_prof_dev",
   "title": "Professional Development",
-  "icon": "ð",
+  "icon": "📚",
   "preview": "Explore career growth opportunities and training programs...",
   "content": "Our professional development programs are designed to help you grow in your career. We offer tuition reimbursement, mentorship programs, and access to online learning platforms. Invest in yourself and reach your full potential!",
-  "order": 2,
+  "order": 1,
   "createdAt": "2026-01-07T00:00:00.000Z",
   "updatedAt": "2026-01-07T00:00:00.000Z"
 }
