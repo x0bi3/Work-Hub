@@ -1,0 +1,9 @@
+{
+  "id": "faq_audit_fail",
+  "category": "auditing",
+  "question": "What happens if I fail an audit?",
+  "answer": "If audit findings are identified, you'll receive a remediation plan. Work with your manager to address any gaps. Follow-up audits will be scheduled to verify improvements.",
+  "order": 3,
+  "createdAt": "2026-01-07T00:00:00.000Z",
+  "updatedAt": "2026-01-07T00:00:00.000Z"
+}
