@@ -728,85 +728,123 @@
         const GITHUB_REPO = 'x0bi3/Work-Hub'; // Format: username/repo-name
         const GITHUB_BRANCH = 'main'; // Your default branch name
 
-        // FAQ Data
-        const faqData = {
-            'working-out-of-area': [
-                {
-                    q: 'What is the process for working out of area?',
-                    a: 'To work out of your assigned area, you must first speak with your direct manager. They will review the request and submit it through the proper channels for approval. Once approved, you\'ll receive confirmation and any necessary documentation.'
-                },
-                {
-                    q: 'How far can I travel for an out-of-area assignment?',
-                    a: 'Out-of-area assignments can typically be within a 50-mile radius of your home location. For assignments beyond this, you may be eligible for additional travel allowances. Contact HR for specifics.'
-                },
-                {
-                    q: 'Do I get paid differently when working out of area?',
-                    a: 'Pay rates remain the same for out-of-area work. However, you may be eligible for travel reimbursement or a travel stipend depending on the distance and duration of your assignment.'
-                }
-            ],
-            'auditing': [
-                {
-                    q: 'What are auditing expectations?',
-                    a: 'Audits are conducted to ensure compliance with company standards. You should maintain accurate records, follow all procedures, and be prepared to explain your work processes to auditors. Documentation is key.'
-                },
-                {
-                    q: 'How often will I be audited?',
-                    a: 'Audit frequency varies by department and role. Most departments undergo audits quarterly. You\'ll receive notification before an audit occurs.'
-                },
-                {
-                    q: 'What happens if I fail an audit?',
-                    a: 'If audit findings are identified, you\'ll receive a remediation plan. Work with your manager to address any gaps. Follow-up audits will be scheduled to verify improvements.'
-                }
-            ],
-            'benefits': [
-                {
-                    q: 'What benefits am I eligible for?',
-                    a: 'Eligibility depends on your employment status and tenure. Full-time employees are typically eligible for health insurance, 401(k), paid time off, and other benefits. Check your employee handbook for complete details.'
-                },
-                {
-                    q: 'When can I enroll in benefits?',
-                    a: 'New employees have 30 days from hire date to enroll. Existing employees can make changes during annual open enrollment (typically October-November) or upon a qualifying life event.'
-                },
-                {
-                    q: 'What is the company\'s matching contribution for 401(k)?',
-                    a: 'The company matches 100% of contributions up to 3% of salary, and 50% of contributions from 3-5%. To receive the full match, contribute at least 5% of your salary.'
-                }
-            ]
-        };
+        // Dynamic data (loaded from GitHub)
+        let faqData = {};
+        let faqCategories = [];
+        let carouselSlides = [];
 
-        // Carousel Data
-        const carouselSlides = [
-            {
-                id: 'slide1',
-                title: 'Professional Development',
-                preview: 'Explore career growth opportunities and training programs...',
-                content: 'Our professional development programs are designed to help you grow in your career. We offer tuition reimbursement, mentorship programs, and access to online learning platforms. Invest in yourself and reach your full potential!'
-            },
-            {
-                id: 'slide2',
-                title: 'Work-Life Balance',
-                preview: 'Discover flexible work arrangements and wellness programs...',
-                content: 'We believe in supporting your whole self. Take advantage of flexible schedules, remote work options, and our comprehensive wellness program including gym discounts, mental health resources, and wellness challenges.'
-            },
-            {
-                id: 'slide3',
-                title: 'Team Culture',
-                preview: 'Be part of a collaborative and inclusive community...',
-                content: 'Our strong team culture is built on collaboration and respect. We celebrate diversity, support each other, and create an inclusive environment where everyone can thrive and feel valued.'
-            },
-            {
-                id: 'slide4',
-                title: 'Innovation & Creativity',
-                preview: 'Share your ideas and shape the future of our organization...',
-                content: 'We value innovation at every level. Your ideas matter! We have regular innovation challenges, hack-a-thons, and an open-door policy for suggestions. Help us solve problems and create new solutions.'
-            },
-            {
-                id: 'slide5',
-                title: 'Recognition & Rewards',
-                preview: 'Your hard work deserves to be celebrated...',
-                content: 'We have multiple programs to recognize excellence including employee of the month awards, spot bonuses, and team celebrations. Your contributions don\'t go unnoticed—we celebrate your success!'
+        /**
+         * Fetch FAQ data from GitHub
+         * Loads from resources/faq/manifest.json and individual question files
+         */
+        async function fetchFAQFromGitHub() {
+            console.log('❓ Loading FAQ data...');
+            const container = document.getElementById('faq-items');
+            container.innerHTML = '<p style="color: var(--text-light);">Loading FAQ...</p>';
+            
+            try {
+                // Load manifest
+                const manifestUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/resources/faq/manifest.json`;
+                const manifestResponse = await fetch(manifestUrl);
+                
+                if (!manifestResponse.ok) {
+                    throw new Error('FAQ manifest not found');
+                }
+                
+                const manifest = await manifestResponse.json();
+                faqCategories = manifest.categories || [];
+                
+                // Update category dropdown
+                const categorySelect = document.getElementById('faq-category');
+                if (categorySelect) {
+                    categorySelect.innerHTML = '<option value="all">All Categories</option>' +
+                        faqCategories.map(c => `<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+                }
+                
+                // Load each FAQ item
+                faqData = {};
+                for (const fileName of manifest.items) {
+                    try {
+                        const itemUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/resources/faq/${fileName}`;
+                        const itemResponse = await fetch(itemUrl);
+                        if (itemResponse.ok) {
+                            const item = await itemResponse.json();
+                            if (!faqData[item.category]) {
+                                faqData[item.category] = [];
+                            }
+                            faqData[item.category].push({
+                                q: item.question,
+                                a: item.answer,
+                                order: item.order
+                            });
+                        }
+                    } catch (e) {
+                        console.warn(`Failed to load FAQ item: ${fileName}`);
+                    }
+                }
+                
+                // Sort items by order within each category
+                for (const category in faqData) {
+                    faqData[category].sort((a, b) => a.order - b.order);
+                }
+                
+                console.log('✅ Loaded FAQ data:', Object.keys(faqData).length, 'categories');
+                
+            } catch (error) {
+                console.error('❌ Failed to load FAQ:', error);
+                container.innerHTML = '<p style="color: var(--danger);">Failed to load FAQ. Please try again later.</p>';
             }
-        ];
+        }
+
+        /**
+         * Fetch TMYK (The More You Know) data from GitHub
+         * Loads from resources/tmyk/manifest.json and individual topic files
+         */
+        async function fetchTMYKFromGitHub() {
+            console.log('💡 Loading TMYK data...');
+            
+            try {
+                // Load manifest
+                const manifestUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/resources/tmyk/manifest.json`;
+                const manifestResponse = await fetch(manifestUrl);
+                
+                if (!manifestResponse.ok) {
+                    throw new Error('TMYK manifest not found');
+                }
+                
+                const manifest = await manifestResponse.json();
+                carouselSlides = [];
+                
+                // Load each TMYK item
+                for (const fileName of manifest.items) {
+                    try {
+                        const itemUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/resources/tmyk/${fileName}`;
+                        const itemResponse = await fetch(itemUrl);
+                        if (itemResponse.ok) {
+                            const item = await itemResponse.json();
+                            carouselSlides.push({
+                                id: item.id,
+                                title: item.title,
+                                icon: item.icon,
+                                preview: item.preview,
+                                content: item.content,
+                                order: item.order
+                            });
+                        }
+                    } catch (e) {
+                        console.warn(`Failed to load TMYK item: ${fileName}`);
+                    }
+                }
+                
+                // Sort by order
+                carouselSlides.sort((a, b) => a.order - b.order);
+                
+                console.log('✅ Loaded TMYK data:', carouselSlides.length, 'slides');
+                
+            } catch (error) {
+                console.error('❌ Failed to load TMYK:', error);
+            }
+        }
 
         // Calendar Events Data
         const calendarEvents = [
@@ -1003,14 +1041,21 @@
         }
 
         async function init() {
+            // Fetch all dynamic content from GitHub
+            await Promise.all([
+                fetchFAQFromGitHub(),
+                fetchTMYKFromGitHub(),
+                fetchNewslettersFromGitHub()
+            ]);
+            
+            // Render all sections
             renderFAQ('all');
             renderCarousel();
-            loadCarouselContent('slide1');
+            if (carouselSlides.length > 0) {
+                loadCarouselContent(carouselSlides[0].id);
+            }
             renderCalendar();
             renderEvents();
-            
-            // Fetch newsletters from GitHub
-            await fetchNewslettersFromGitHub();
             renderNewsletters();
         }
 
@@ -1062,10 +1107,14 @@
         // Carousel Functions
         function renderCarousel() {
             const carousel = document.getElementById('carousel');
+            if (carouselSlides.length === 0) {
+                carousel.innerHTML = '<p style="color: var(--text-light);">Loading content...</p>';
+                return;
+            }
             carousel.innerHTML = carouselSlides.map(slide => `
                 <div class="carousel-slide">
                     <div>
-                        <h4>${slide.title}</h4>
+                        <h4>${slide.icon || ''} ${slide.title}</h4>
                         <p>${slide.preview}</p>
                     </div>
                     <button class="carousel-btn" onclick="loadCarouselContent('${slide.id}')">Learn More</button>
