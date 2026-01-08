@@ -1,0 +1,9 @@
+{
+  "id": "faq_benefits_elig",
+  "category": "benefits",
+  "question": "What benefits am I eligible for?",
+  "answer": "Eligibility depends on your employment status and tenure. Full-time employees are typically eligible for health insurance, 401(k), paid time off, and other benefits. Check your employee handbook for complete details.",
+  "order": 1,
+  "createdAt": "2026-01-07T00:00:00.000Z",
+  "updatedAt": "2026-01-07T00:00:00.000Z"
+}
