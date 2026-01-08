@@ -1,0 +1,9 @@
+{
+  "id": "faq_benefits_enroll",
+  "category": "benefits",
+  "question": "When can I enroll in benefits?",
+  "answer": "New employees have 30 days from hire date to enroll. Existing employees can make changes during annual open enrollment (typically October-November) or upon a qualifying life event.",
+  "order": 2,
+  "createdAt": "2026-01-07T00:00:00.000Z",
+  "updatedAt": "2026-01-07T00:00:00.000Z"
+}
