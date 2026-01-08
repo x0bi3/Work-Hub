@@ -1,0 +1,9 @@
+{
+  "id": "faq_audit_expect",
+  "category": "auditing",
+  "question": "What are auditing expectations?",
+  "answer": "Audits are conducted to ensure compliance with company standards. You should maintain accurate records, follow all procedures, and be prepared to explain your work processes to auditors. Documentation is key.",
+  "order": 1,
+  "createdAt": "2026-01-07T00:00:00.000Z",
+  "updatedAt": "2026-01-07T00:00:00.000Z"
+}
