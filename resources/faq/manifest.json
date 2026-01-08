@@ -3,32 +3,32 @@
     {
       "id": "working-out-of-area",
       "name": "Working Out of Area",
-      "icon": "🚗",
+      "icon": "ð",
       "order": 1
     },
     {
       "id": "auditing",
       "name": "Auditing",
-      "icon": "📋",
+      "icon": "ð",
       "order": 2
     },
     {
       "id": "benefits",
       "name": "Benefits",
-      "icon": "💼",
+      "icon": "ð¼",
       "order": 3
     }
   ],
   "items": [
     "working-out-of-area-process.json",
-    "working-out-of-area-travel.json",
-    "working-out-of-area-pay.json",
     "auditing-expectations.json",
-    "auditing-frequency.json",
-    "auditing-failure.json",
     "benefits-eligibility.json",
+    "working-out-of-area-travel.json",
+    "auditing-frequency.json",
     "benefits-enrollment.json",
+    "working-out-of-area-pay.json",
+    "auditing-failure.json",
     "benefits-401k.json"
   ],
-  "lastUpdated": "2026-01-07T00:00:00.000Z"
+  "lastUpdated": "2026-01-08T14:55:36.814Z"
 }
