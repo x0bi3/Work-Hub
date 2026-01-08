@@ -1,0 +1,9 @@
+{
+  "id": "faq_benefits_401k",
+  "category": "benefits",
+  "question": "What is the company's matching contribution for 401(k)?",
+  "answer": "The company matches 100% of contributions up to 3% of salary, and 50% of contributions from 3-5%. To receive the full match, contribute at least 5% of your salary.",
+  "order": 3,
+  "createdAt": "2026-01-07T00:00:00.000Z",
+  "updatedAt": "2026-01-07T00:00:00.000Z"
+}
