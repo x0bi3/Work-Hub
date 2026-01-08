@@ -1,0 +1,34 @@
+{
+  "categories": [
+    {
+      "id": "working-out-of-area",
+      "name": "Working Out of Area",
+      "icon": "🚗",
+      "order": 1
+    },
+    {
+      "id": "auditing",
+      "name": "Auditing",
+      "icon": "📋",
+      "order": 2
+    },
+    {
+      "id": "benefits",
+      "name": "Benefits",
+      "icon": "💼",
+      "order": 3
+    }
+  ],
+  "items": [
+    "working-out-of-area-process.json",
+    "working-out-of-area-travel.json",
+    "working-out-of-area-pay.json",
+    "auditing-expectations.json",
+    "auditing-frequency.json",
+    "auditing-failure.json",
+    "benefits-eligibility.json",
+    "benefits-enrollment.json",
+    "benefits-401k.json"
+  ],
+  "lastUpdated": "2026-01-07T00:00:00.000Z"
+}
