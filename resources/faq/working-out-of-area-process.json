@@ -1,9 +1,9 @@
 {
   "id": "faq_woa_process",
   "category": "working-out-of-area",
-  "question": "[TEST]What is the process for working out of area?",
+  "question": "What is the process for working out of area?",
   "answer": "To work out of your assigned area, you must first speak with your direct manager. They will review the request and submit it through the proper channels for approval. Once approved, you'll receive confirmation and any necessary documentation.",
   "order": 1,
   "createdAt": "2026-01-07T00:00:00.000Z",
-  "updatedAt": "2026-01-08T14:55:23.392Z"
+  "updatedAt": "2026-01-07T00:00:00.000Z"
 }
