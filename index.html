@@ -391,6 +391,16 @@
             border-color: var(--border);
         }
 
+        .day.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary-dark);
+        }
+
+        .day.selected.has-event::after {
+            color: white;
+        }
+
         /* Events List */
         .events-list {
             background: white;
@@ -1099,13 +1109,24 @@
             document.getElementById('calendar-days').innerHTML = html;
         }
 
+        // Track currently selected day
+        let selectedDay = null;
+
+        function clearDateSelection() {
+            selectedDay = null;
+            document.querySelectorAll('.day').forEach(d => d.classList.remove('selected'));
+            renderEvents();
+        }
+
         function prevMonth() {
             currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1);
+            clearDateSelection();
             renderCalendar();
         }
 
         function nextMonth() {
             currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1);
+            clearDateSelection();
             renderCalendar();
         }
 
@@ -1115,8 +1136,26 @@
             const events = calendarEvents.filter(e => e.date === day && e.month === month && e.year === year);
             const list = document.getElementById('events-items');
             
+            // Update selected day tracking
+            selectedDay = day;
+            
+            // Update visual selection on calendar
+            document.querySelectorAll('.day').forEach(d => d.classList.remove('selected'));
+            const dayElements = document.querySelectorAll('.day:not(.other-month)');
+            dayElements.forEach(d => {
+                if (parseInt(d.textContent) === day) {
+                    d.classList.add('selected');
+                }
+            });
+            
+            // Show events for selected day or "no events" message
             if (events.length > 0) {
-                list.innerHTML = events.map((e, idx) => `
+                list.innerHTML = `
+                    <p style="color: var(--text-light); padding: 0.5rem 0; font-size: 0.9rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem;">
+                        Events for ${new Date(year, month, day).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                        <button onclick="clearDateSelection()" style="float: right; background: none; border: none; color: var(--primary); cursor: pointer; font-size: 0.9rem;">Show all events</button>
+                    </p>
+                ` + events.map((e, idx) => `
                     <div class="event-item active">
                         <h4>${e.title}</h4>
                         <p>📅 ${new Date(year, month, day).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
@@ -1124,6 +1163,14 @@
                         <p>${e.description}</p>
                     </div>
                 `).join('');
+            } else {
+                list.innerHTML = `
+                    <p style="color: var(--text-light); padding: 0.5rem 0; font-size: 0.9rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem;">
+                        Events for ${new Date(year, month, day).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                        <button onclick="clearDateSelection()" style="float: right; background: none; border: none; color: var(--primary); cursor: pointer; font-size: 0.9rem;">Show all events</button>
+                    </p>
+                    <p style="color: var(--text-light); padding: 1rem; text-align: center;">No events scheduled for this day</p>
+                `;
             }
         }
 
