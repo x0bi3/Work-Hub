@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Work Hub - Employee Portal">
+    <!-- Prevent browser caching -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Work Hub Portal</title>
     <style>
         * {
@@ -742,10 +746,13 @@
             const container = document.getElementById('faq-items');
             container.innerHTML = '<p style="color: var(--text-light);">Loading FAQ...</p>';
             
+            // Cache buster to ensure fresh data
+            const cacheBuster = `?t=${Date.now()}`;
+            
             try {
                 // Load manifest
-                const manifestUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/resources/faq/manifest.json`;
-                const manifestResponse = await fetch(manifestUrl);
+                const manifestUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/resources/faq/manifest.json${cacheBuster}`;
+                const manifestResponse = await fetch(manifestUrl, { cache: 'no-store' });
                 
                 if (!manifestResponse.ok) {
                     throw new Error('FAQ manifest not found');
@@ -765,8 +772,8 @@
                 faqData = {};
                 for (const fileName of manifest.items) {
                     try {
-                        const itemUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/resources/faq/${fileName}`;
-                        const itemResponse = await fetch(itemUrl);
+                        const itemUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/resources/faq/${fileName}${cacheBuster}`;
+                        const itemResponse = await fetch(itemUrl, { cache: 'no-store' });
                         if (itemResponse.ok) {
                             const item = await itemResponse.json();
                             if (!faqData[item.category]) {
@@ -803,10 +810,13 @@
         async function fetchTMYKFromGitHub() {
             console.log('💡 Loading TMYK data...');
             
+            // Cache buster to ensure fresh data
+            const cacheBuster = `?t=${Date.now()}`;
+            
             try {
                 // Load manifest
-                const manifestUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/resources/tmyk/manifest.json`;
-                const manifestResponse = await fetch(manifestUrl);
+                const manifestUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/resources/tmyk/manifest.json${cacheBuster}`;
+                const manifestResponse = await fetch(manifestUrl, { cache: 'no-store' });
                 
                 if (!manifestResponse.ok) {
                     throw new Error('TMYK manifest not found');
@@ -818,8 +828,8 @@
                 // Load each TMYK item
                 for (const fileName of manifest.items) {
                     try {
-                        const itemUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/resources/tmyk/${fileName}`;
-                        const itemResponse = await fetch(itemUrl);
+                        const itemUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/resources/tmyk/${fileName}${cacheBuster}`;
+                        const itemResponse = await fetch(itemUrl, { cache: 'no-store' });
                         if (itemResponse.ok) {
                             const item = await itemResponse.json();
                             carouselSlides.push({
