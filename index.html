@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Work Hub - Employee Portal">
-    <!-- Last updated: 2026-01-08 - Single commit test -->
     <!-- Prevent browser caching -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -1003,6 +1002,27 @@
             renderCalendar();
             renderEvents();
             renderNewsletters();
+            
+            // Add click-outside-to-deselect for calendar
+            document.addEventListener('click', function(e) {
+                // Only handle clicks when on calendar page and a day is selected
+                if (selectedDay === null) return;
+                
+                // Check if click was on a calendar day
+                const clickedDay = e.target.closest('.day:not(.other-month)');
+                if (clickedDay) return; // Let selectDate handle it
+                
+                // Check if click was on an event item
+                const clickedEvent = e.target.closest('.event-item');
+                if (clickedEvent) return; // Let event click handler handle it
+                
+                // Check if click was on prev/next month buttons
+                const clickedButton = e.target.closest('.calendar-header button');
+                if (clickedButton) return;
+                
+                // Click was outside - clear selection
+                clearDateSelection();
+            });
         }
 
         // Navigation
@@ -1099,7 +1119,7 @@
             // Current month days
             for (let i = 1; i <= lastDay.getDate(); i++) {
                 const hasEvent = calendarEvents.some(e => e.date === i && e.month === month && e.year === year);
-                html += `<div class="day ${hasEvent ? 'has-event' : ''}" onclick="selectDate(${i})">${i}</div>`;
+                html += `<div class="day ${hasEvent ? 'has-event' : ''}" onclick="event.stopPropagation(); selectDate(${i})">${i}</div>`;
             }
             
             // Next month days
@@ -1150,13 +1170,12 @@
             });
             
             // Show events for selected day or "no events" message
+            const dateHeader = `<p style="color: var(--text-light); padding: 0.5rem 0; font-size: 0.9rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem;">
+                Events for ${new Date(year, month, day).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            </p>`;
+            
             if (events.length > 0) {
-                list.innerHTML = `
-                    <p style="color: var(--text-light); padding: 0.5rem 0; font-size: 0.9rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem;">
-                        Events for ${new Date(year, month, day).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                        <button onclick="clearDateSelection()" style="float: right; background: none; border: none; color: var(--primary); cursor: pointer; font-size: 0.9rem;">Show all events</button>
-                    </p>
-                ` + events.map((e, idx) => `
+                list.innerHTML = dateHeader + events.map((e, idx) => `
                     <div class="event-item active">
                         <h4>${e.title}</h4>
                         <p>📅 ${new Date(year, month, day).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
@@ -1165,35 +1184,29 @@
                     </div>
                 `).join('');
             } else {
-                list.innerHTML = `
-                    <p style="color: var(--text-light); padding: 0.5rem 0; font-size: 0.9rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem;">
-                        Events for ${new Date(year, month, day).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                        <button onclick="clearDateSelection()" style="float: right; background: none; border: none; color: var(--primary); cursor: pointer; font-size: 0.9rem;">Show all events</button>
-                    </p>
-                    <p style="color: var(--text-light); padding: 1rem; text-align: center;">No events scheduled for this day</p>
-                `;
+                list.innerHTML = dateHeader + `<p style="color: var(--text-light); padding: 1rem; text-align: center;">No events scheduled for this day</p>`;
             }
         }
 
         function renderEvents() {
             const list = document.getElementById('events-items');
-            const now = new Date();
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
             
-            // Filter to show only upcoming events, sorted by date
-            const upcomingEvents = calendarEvents
-                .filter(e => new Date(e.startDate) >= now)
-                .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
-                .slice(0, 10);
+            // Filter to show events for the currently viewed month
+            const monthEvents = calendarEvents
+                .filter(e => e.month === month && e.year === year)
+                .sort((a, b) => a.date - b.date);
             
-            if (upcomingEvents.length === 0) {
-                list.innerHTML = '<p style="color: var(--text-light); padding: 1rem;">No upcoming events</p>';
+            if (monthEvents.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-light); padding: 1rem;">No events this month</p>';
                 return;
             }
             
-            list.innerHTML = upcomingEvents.map(e => {
-                const eventDate = new Date(e.startDate);
+            list.innerHTML = monthEvents.map(e => {
+                const eventDate = new Date(e.year, e.month, e.date);
                 return `
-                    <div class="event-item" onclick="selectDateFromEvent(${e.date}, ${e.month}, ${e.year})">
+                    <div class="event-item" onclick="selectDateFromEvent(${e.date}, ${e.month}, ${e.year}); event.stopPropagation();">
                         <h4>${e.title}</h4>
                         <p>📅 ${eventDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                         ${e.location ? `<p>📍 ${e.location}</p>` : ''}
