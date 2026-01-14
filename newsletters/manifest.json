@@ -49,16 +49,6 @@
       "updatedAt": "2026-01-14T17:24:31.230Z"
     },
     {
-      "id": "nl_w4h7e99y4_1768413393034",
-      "title": "Test Publishing",
-      "slug": "test-publishing",
-      "path": "newsletters/2026/01/test-publishing.html",
-      "status": "published",
-      "publishDate": "2026-01-14",
-      "tags": [],
-      "updatedAt": "2026-01-14T17:56:33.035Z"
-    },
-    {
       "id": "nl_mllj7lk41_1768411004082",
       "title": "test111",
       "slug": "test111",
@@ -71,5 +61,5 @@
       "updatedAt": "2026-01-14T17:16:59.651Z"
     }
   ],
-  "lastUpdated": "2026-01-14T18:15:26.289Z"
+  "lastUpdated": "2026-01-14T18:15:31.658Z"
 }
