@@ -1,17 +1,4 @@
 {
-  "newsletters": [
-    {
-      "id": "nl_chi2alrsy_1768411191511",
-      "title": "123321",
-      "slug": "123321",
-      "path": "newsletters/2026/01/123321.html",
-      "status": "published",
-      "publishDate": "2026-01-14",
-      "tags": [
-        "123"
-      ],
-      "updatedAt": "2026-01-14T17:19:51.511Z"
-    }
-  ],
-  "lastUpdated": "2026-01-14T18:15:56.088Z"
+  "newsletters": [],
+  "lastUpdated": "2026-01-14T18:16:00.438Z"
 }
