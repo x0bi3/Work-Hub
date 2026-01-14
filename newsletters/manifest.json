@@ -1,4 +1,15 @@
 {
-  "newsletters": [],
-  "lastUpdated": "2026-01-14T18:16:00.438Z"
+  "newsletters": [
+    {
+      "id": "nl_umv5w58yc_1768414651312",
+      "title": "Testing My Newsletter Publication",
+      "slug": "testing-my-newsletter-publication",
+      "path": "newsletters/2026/01/testing-my-newsletter-publication.html",
+      "status": "published",
+      "publishDate": "2026-01-14",
+      "tags": [],
+      "updatedAt": "2026-01-14T18:17:31.312Z"
+    }
+  ],
+  "lastUpdated": "2026-01-14T18:17:32.718Z"
 }
