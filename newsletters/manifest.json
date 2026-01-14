@@ -79,19 +79,7 @@
       "publishDate": "2026-01-08",
       "tags": [],
       "updatedAt": "2026-01-08T15:57:03.930Z"
-    },
-    {
-      "id": "nl_4kmk0jqlg_1767810913704",
-      "title": "test",
-      "slug": "test",
-      "path": "newsletters/2026/01/test.html",
-      "status": "published",
-      "publishDate": "2026-01-07",
-      "tags": [
-        "test"
-      ],
-      "updatedAt": "2026-01-07T18:35:13.705Z"
     }
   ],
-  "lastUpdated": "2026-01-14T18:14:57.791Z"
+  "lastUpdated": "2026-01-14T18:15:20.750Z"
 }
