@@ -141,20 +141,7 @@
         "okay"
       ],
       "updatedAt": "2026-01-07T19:10:26.947Z"
-    },
-    {
-      "id": "gh_ecdf162fb840",
-      "title": "Test newsletter",
-      "slug": "test-newsletter",
-      "path": "newsletters/2025/12/test-newsletter.html",
-      "status": "published",
-      "publishDate": "2025-12-31",
-      "tags": [
-        "test",
-        "newsletter"
-      ],
-      "updatedAt": "2026-01-07T15:27:51.030Z"
     }
   ],
-  "lastUpdated": "2026-01-14T18:04:59.708Z"
+  "lastUpdated": "2026-01-14T18:05:17.901Z"
 }
