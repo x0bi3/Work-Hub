@@ -18,19 +18,22 @@
         }
 
         :root {
-            --primary: #0f766e;
-            --primary-light: #14b8a6;
-            --primary-dark: #115e59;
-            --secondary: #7c3aed;
-            --accent: #f59e0b;
+            /* Walmart Blue Theme */
+            --primary: #0071dc;
+            --primary-light: #1a8cff;
+            --primary-dark: #004c91;
+            --secondary: #041f41;
+            --accent: #ffc220;
             --success: #10b981;
             --danger: #ef4444;
-            --light: #f0fdfc;
+            --light: #f0f7ff;
             --text: #1a1a1a;
             --text-light: #666;
             --border: #e0e0e0;
             --shadow: 0 2px 8px rgba(0,0,0,0.1);
             --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+            /* Walmart Spark Yellow for highlights */
+            --spark: #ffc220;
         }
 
         html {
@@ -196,100 +199,396 @@
             display: block;
         }
 
-        /* Carousel Section */
+        /* Rich Content Styling (for FAQ answers and TMYK content) */
+        .rich-content {
+            line-height: 1.8;
+        }
+
+        .rich-content h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 1rem 0 0.5rem 0;
+            color: var(--primary-dark);
+        }
+
+        .rich-content h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0.875rem 0 0.5rem 0;
+            color: var(--primary-dark);
+        }
+
+        .rich-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0.75rem 0 0.5rem 0;
+            color: var(--primary-dark);
+        }
+
+        .rich-content h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0.5rem 0 0.25rem 0;
+            color: var(--primary-dark);
+        }
+
+        .rich-content p {
+            margin: 0.5rem 0;
+        }
+
+        .rich-content ul, .rich-content ol {
+            margin: 0.5rem 0 0.5rem 1.5rem;
+            padding-left: 0.5rem;
+        }
+
+        .rich-content li {
+            margin-bottom: 0.25rem;
+        }
+
+        .rich-content a {
+            color: var(--primary);
+            text-decoration: underline;
+            transition: color 0.2s;
+        }
+
+        .rich-content a:hover {
+            color: var(--primary-dark);
+        }
+
+        .rich-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1rem 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .rich-content strong, .rich-content b {
+            font-weight: 700;
+        }
+
+        .rich-content em, .rich-content i {
+            font-style: italic;
+        }
+
+        .rich-content u {
+            text-decoration: underline;
+        }
+
+        .rich-content s, .rich-content strike {
+            text-decoration: line-through;
+        }
+
+        .rich-content blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1rem;
+            margin: 1rem 0;
+            font-style: italic;
+            color: var(--text-light);
+            background: var(--light);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .rich-content code {
+            background: #f4f4f4;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+
+        .rich-content pre {
+            background: #f4f4f4;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            margin: 1rem 0;
+        }
+
+        .rich-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .rich-content th, .rich-content td {
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        .rich-content th {
+            background: var(--light);
+            font-weight: 600;
+        }
+
+        /* Carousel Section - Walmart Blue Theme */
         .carousel-section {
             margin-bottom: 3rem;
         }
 
         .carousel-container {
             position: relative;
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
+            background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+            border-radius: 16px;
+            padding: 2.5rem 2rem 2rem;
             box-shadow: var(--shadow-lg);
             margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        /* Walmart Spark decoration */
+        .carousel-container::before {
+            content: '✦';
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            color: var(--spark);
+            opacity: 0.6;
+        }
+
+        .carousel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding: 0 0.5rem;
+        }
+
+        .carousel-title {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .carousel-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .carousel-nav-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.15);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: white;
+            transform: scale(1.1);
+        }
+
+        .carousel-nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .autoplay-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 20px;
+            padding: 6px 14px;
+            color: white;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .autoplay-toggle:hover {
+            background: rgba(255,255,255,0.25);
+            border-color: white;
+        }
+
+        .autoplay-toggle.playing {
+            background: var(--spark);
+            border-color: var(--spark);
+            color: var(--primary-dark);
+        }
+
+        .carousel-track-wrapper {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
         }
 
         .carousel-track {
             display: flex;
-            gap: 1.5rem;
-            overflow-x: auto;
-            scroll-behavior: smooth;
-            padding: 1rem 0;
-            scroll-snap-type: x mandatory;
-        }
-
-        .carousel-track::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .carousel-track::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 4px;
+            transition: transform 0.5s ease-in-out;
+            will-change: transform;
         }
 
         .carousel-slide {
-            flex: 0 0 calc(100% - 2rem);
-            min-height: 300px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            border-radius: 8px;
+            flex: 0 0 100%;
+            min-height: 280px;
+            background: white;
+            border-radius: 12px;
             padding: 2rem;
-            color: white;
+            color: var(--text);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            scroll-snap-align: start;
-            transition: transform 0.3s;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
         .carousel-slide:hover {
-            transform: translateY(-4px);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .carousel-slide-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
         }
 
         .carousel-slide h4 {
             font-size: 1.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary-dark);
         }
 
         .carousel-slide p {
-            opacity: 0.95;
+            color: var(--text-light);
             margin-bottom: 1.5rem;
             flex-grow: 1;
+            font-size: 1rem;
+            line-height: 1.7;
         }
 
         .carousel-btn {
             align-self: flex-start;
-            background: white;
-            color: var(--primary);
+            background: var(--primary);
+            color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
+            padding: 12px 24px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 0.95rem;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .carousel-btn:hover {
-            background: var(--accent);
-            color: white;
+            background: var(--primary-dark);
+            transform: translateX(4px);
         }
 
+        .carousel-btn::after {
+            content: '→';
+            transition: transform 0.3s;
+        }
+
+        .carousel-btn:hover::after {
+            transform: translateX(4px);
+        }
+
+        /* Carousel Indicators (Dots) */
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .carousel-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 0;
+        }
+
+        .carousel-dot:hover {
+            background: rgba(255,255,255,0.7);
+            transform: scale(1.2);
+        }
+
+        .carousel-dot.active {
+            background: var(--spark);
+            transform: scale(1.3);
+            box-shadow: 0 0 10px rgba(255,194,32,0.5);
+        }
+
+        /* Progress bar for auto-scroll */
+        .carousel-progress {
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .carousel-progress-bar {
+            height: 100%;
+            background: var(--spark);
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .carousel-progress-bar.paused {
+            animation: none !important;
+        }
+
+        /* Content Section */
         .carousel-content {
             background: white;
-            border-radius: 8px;
-            padding: 2rem;
-            border: 2px solid var(--light);
+            border-radius: 12px;
+            padding: 2.5rem;
+            border: none;
+            box-shadow: var(--shadow-lg);
+            border-left: 5px solid var(--primary);
+            position: relative;
         }
 
         .carousel-content h4 {
-            color: var(--primary);
+            color: var(--primary-dark);
             margin-bottom: 1rem;
             font-size: 1.5rem;
+            padding-right: 2rem;
         }
 
         .carousel-content p {
-            color: var(--text-light);
-            line-height: 1.8;
+            color: var(--text);
+            line-height: 1.9;
+            font-size: 1.05rem;
+        }
+
+        .carousel-content ul, .carousel-content ol {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+            color: var(--text);
+        }
+
+        .carousel-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.7;
         }
 
         /* Calendar Section */
@@ -517,10 +816,66 @@
                 font-size: 1.5rem;
             }
 
+            /* Carousel Mobile Styles */
+            .carousel-container {
+                padding: 1.5rem 1rem 1.5rem;
+                border-radius: 12px;
+            }
+
+            .carousel-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .carousel-controls {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .carousel-nav-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+            }
+
+            .autoplay-toggle {
+                padding: 5px 12px;
+                font-size: 0.8rem;
+            }
+
             .carousel-slide {
-                flex: 0 0 calc(100% - 1rem);
-                min-height: 250px;
+                min-height: 220px;
                 padding: 1.5rem;
+            }
+
+            .carousel-slide-icon {
+                font-size: 2.5rem;
+            }
+
+            .carousel-slide h4 {
+                font-size: 1.25rem;
+            }
+
+            .carousel-slide p {
+                font-size: 0.9rem;
+            }
+
+            .carousel-btn {
+                padding: 10px 18px;
+                font-size: 0.9rem;
+            }
+
+            .carousel-content {
+                padding: 1.5rem;
+            }
+
+            .carousel-content h4 {
+                font-size: 1.25rem;
+            }
+
+            .carousel-content p {
+                font-size: 0.95rem;
             }
         }
     </style>
@@ -561,8 +916,27 @@
             <h2>💡 The More You Know</h2>
             <div class="carousel-section">
                 <div class="carousel-container">
-                    <div class="carousel-track" id="carousel">
-                        <!-- Slides will be generated here -->
+                    <div class="carousel-header">
+                        <span class="carousel-title">✦ Featured Topics</span>
+                        <div class="carousel-controls">
+                            <button class="carousel-nav-btn" id="carousel-prev" onclick="carouselPrev()" aria-label="Previous slide">‹</button>
+                            <button class="carousel-nav-btn" id="carousel-next" onclick="carouselNext()" aria-label="Next slide">›</button>
+                            <button class="autoplay-toggle playing" id="autoplay-toggle" onclick="toggleAutoplay()" aria-label="Toggle auto-scroll">
+                                <span id="autoplay-icon">⏸</span>
+                                <span id="autoplay-text">Auto</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="carousel-track-wrapper">
+                        <div class="carousel-track" id="carousel">
+                            <!-- Slides will be generated here -->
+                        </div>
+                    </div>
+                    <div class="carousel-indicators" id="carousel-indicators">
+                        <!-- Dots will be generated here -->
+                    </div>
+                    <div class="carousel-progress">
+                        <div class="carousel-progress-bar" id="carousel-progress"></div>
                     </div>
                 </div>
                 <div class="carousel-content" id="carousel-content">
@@ -607,19 +981,19 @@
             <div class="newsletter-subscribe" style="background: linear-gradient(135deg, var(--primary-light), var(--primary)); color: white; padding: 2rem; border-radius: 12px; margin-bottom: 2rem; text-align: center;">
                 <h3 style="color: white; margin-bottom: 0.5rem; font-size: 1.5rem;">📧 Subscribe to Work-Hub Newsletter</h3>
                 <p style="margin-bottom: 1.5rem; opacity: 0.95;">Stay up to date with the latest news, updates, and announcements from Work-Hub.</p>
-                <a href="mailto:ryan.baldwin@walmart.com?subject=Subscribe%20to%20Work-Hub%20Newsletter&body=Add%20me%20to%20the%20list!" 
+                <button onclick="handleSubscribeClick()" 
                    class="subscribe-btn" 
-                   style="display: inline-block; padding: 14px 32px; background: white; color: var(--primary-dark); text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 1.1rem; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                   style="display: inline-block; padding: 14px 32px; background: white; color: var(--primary-dark); text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 1.1rem; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; border: none;">
                     ✉️ Subscribe Now
-                </a>
+                </button>
                 
                 <!-- How to Subscribe Instructions -->
                 <div style="margin-top: 1.5rem; text-align: left; background: rgba(255,255,255,0.15); padding: 1.25rem 1.5rem; border-radius: 8px;">
                     <p style="font-weight: 600; margin-bottom: 0.75rem; font-size: 1rem;">📋 How to Subscribe:</p>
                     <ol style="margin: 0; padding-left: 1.5rem; font-size: 0.95rem; line-height: 1.8;">
-                        <li><strong>Click Subscribe</strong> — Tap the button above</li>
-                        <li><strong>Choose your email app</strong> — Select whichever email app is available on your device</li>
-                        <li><strong>Send the email</strong> — The template is pre-filled, just hit send!</li>
+                        <li><strong>Click Subscribe</strong> — Opens your email with a pre-filled message</li>
+                        <li><strong>Review the email</strong> — Your subscription request is ready to go</li>
+                        <li><strong>Hit Send</strong> — That's it, you're subscribed!</li>
                     </ol>
                 </div>
             </div>
@@ -689,6 +1063,7 @@
                             faqData[item.category].push({
                                 q: item.question,
                                 a: item.answer,
+                                icon: item.icon || '',
                                 order: item.order
                             });
                         }
@@ -822,7 +1197,6 @@
 
         // Initialize
         let currentMonth = new Date();
-        let currentSlide = 0;
 
         /**
          * Fetch newsletters from GitHub repository
@@ -1054,6 +1428,13 @@
             document.getElementById(pageName).classList.add('active');
             document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
+            
+            // Handle carousel autoplay based on page visibility
+            if (pageName === 'knowmore' && isAutoplayEnabled) {
+                startAutoplay();
+            } else {
+                stopAutoplay();
+            }
         }
 
         // FAQ Functions
@@ -1070,10 +1451,10 @@
             container.innerHTML = items.map((item, idx) => `
                 <div class="faq-item">
                     <div class="faq-question" onclick="toggleFAQ(this)">
-                        <span>${item.q}</span>
+                        <span>${item.icon ? item.icon + ' ' : ''}${item.q}</span>
                         <span class="faq-toggle">▼</span>
                     </div>
-                    <div class="faq-answer">
+                    <div class="faq-answer rich-content">
                         ${item.a}
                     </div>
                 </div>
@@ -1093,32 +1474,287 @@
             toggle.classList.toggle('open');
         }
 
+        // Carousel State & Configuration
+        let currentSlideIndex = 0;
+        let carouselAutoplayInterval = null;
+        let carouselProgressInterval = null;
+        let isAutoplayEnabled = true;
+        const AUTOPLAY_DURATION = 6000; // 6 seconds per slide
+        const PROGRESS_UPDATE_INTERVAL = 50; // Update progress bar every 50ms
+        
+        // Progress tracking for pause/resume
+        let carouselProgressValue = 0;
+        let carouselElapsedTime = 0;
+
         // Carousel Functions
         function renderCarousel() {
             const carousel = document.getElementById('carousel');
+            const indicators = document.getElementById('carousel-indicators');
+            
             if (carouselSlides.length === 0) {
-                carousel.innerHTML = '<p style="color: var(--text-light);">Loading content...</p>';
+                carousel.innerHTML = '<div class="carousel-slide"><p style="color: var(--text-light); text-align: center;">Loading content...</p></div>';
+                indicators.innerHTML = '';
                 return;
             }
-            carousel.innerHTML = carouselSlides.map(slide => `
-                <div class="carousel-slide">
+            
+            // Render slides
+            carousel.innerHTML = carouselSlides.map((slide, index) => `
+                <div class="carousel-slide" data-slide-index="${index}">
                     <div>
-                        <h4>${slide.icon || ''} ${slide.title}</h4>
+                        <div class="carousel-slide-icon">${slide.icon || '💡'}</div>
+                        <h4>${slide.title}</h4>
                         <p>${slide.preview}</p>
                     </div>
                     <button class="carousel-btn" onclick="loadCarouselContent('${slide.id}')">Learn More</button>
                 </div>
             `).join('');
+            
+            // Render indicator dots
+            indicators.innerHTML = carouselSlides.map((_, index) => `
+                <button class="carousel-dot ${index === 0 ? 'active' : ''}" 
+                        data-index="${index}" 
+                        onclick="goToSlide(${index})"
+                        aria-label="Go to slide ${index + 1}"></button>
+            `).join('');
+            
+            // Set initial slide position
+            updateCarouselPosition();
+            
+            // Start autoplay
+            if (isAutoplayEnabled) {
+                startAutoplay();
+            }
+            
+            // Add hover pause behavior
+            const container = document.querySelector('.carousel-container');
+            container.addEventListener('mouseenter', pauseAutoplay);
+            container.addEventListener('mouseleave', resumeAutoplay);
+            
+            // Initialize touch swipe (needs DOM elements)
+            initCarouselTouchSwipe();
+        }
+
+        function updateCarouselPosition() {
+            const carousel = document.getElementById('carousel');
+            const translateX = -currentSlideIndex * 100;
+            carousel.style.transform = `translateX(${translateX}%)`;
+            
+            // Update active dot
+            document.querySelectorAll('.carousel-dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlideIndex);
+            });
+            
+            // Update nav button states
+            updateNavButtonStates();
+        }
+
+        function updateNavButtonStates() {
+            const prevBtn = document.getElementById('carousel-prev');
+            const nextBtn = document.getElementById('carousel-next');
+            
+            // In auto-scroll mode, we loop, so buttons are always enabled
+            // But we can optionally disable at boundaries for manual nav
+            if (prevBtn) prevBtn.disabled = false;
+            if (nextBtn) nextBtn.disabled = false;
+        }
+
+        function goToSlide(index) {
+            if (index < 0) {
+                index = carouselSlides.length - 1;
+            } else if (index >= carouselSlides.length) {
+                index = 0;
+            }
+            
+            currentSlideIndex = index;
+            updateCarouselPosition();
+            
+            // Reset progress for new slide
+            carouselProgressValue = 0;
+            carouselElapsedTime = 0;
+            const progressBar = document.getElementById('carousel-progress');
+            if (progressBar) {
+                progressBar.style.width = '0%';
+            }
+        }
+
+        function carouselNext() {
+            goToSlide(currentSlideIndex + 1);
+        }
+
+        function carouselPrev() {
+            goToSlide(currentSlideIndex - 1);
+        }
+
+        function startAutoplay(resumeFromPause = false) {
+            if (!isAutoplayEnabled || carouselSlides.length <= 1) return;
+            
+            stopAutoplay();
+            
+            const progressBar = document.getElementById('carousel-progress');
+            
+            // If not resuming, reset progress
+            if (!resumeFromPause) {
+                carouselProgressValue = 0;
+                carouselElapsedTime = 0;
+            }
+            
+            // Calculate remaining time for this slide
+            const remainingTime = AUTOPLAY_DURATION - carouselElapsedTime;
+            
+            // Progress bar animation - continues from current progress
+            carouselProgressInterval = setInterval(() => {
+                carouselElapsedTime += PROGRESS_UPDATE_INTERVAL;
+                carouselProgressValue = (carouselElapsedTime / AUTOPLAY_DURATION) * 100;
+                if (progressBar) {
+                    progressBar.style.width = `${Math.min(carouselProgressValue, 100)}%`;
+                }
+                
+                // Check if we've reached the end of this slide's duration
+                if (carouselElapsedTime >= AUTOPLAY_DURATION) {
+                    carouselNext();
+                    // goToSlide resets the progress, and we continue
+                }
+            }, PROGRESS_UPDATE_INTERVAL);
+        }
+
+        function stopAutoplay() {
+            if (carouselAutoplayInterval) {
+                clearInterval(carouselAutoplayInterval);
+                carouselAutoplayInterval = null;
+            }
+            if (carouselProgressInterval) {
+                clearInterval(carouselProgressInterval);
+                carouselProgressInterval = null;
+            }
+        }
+
+        function pauseAutoplay() {
+            if (isAutoplayEnabled) {
+                // Stop intervals but preserve progress values
+                stopAutoplay();
+                const progressBar = document.getElementById('carousel-progress');
+                if (progressBar) {
+                    progressBar.classList.add('paused');
+                }
+            }
+        }
+
+        function resumeAutoplay() {
+            if (isAutoplayEnabled) {
+                const progressBar = document.getElementById('carousel-progress');
+                if (progressBar) {
+                    progressBar.classList.remove('paused');
+                }
+                // Resume from where we left off
+                startAutoplay(true);
+            }
+        }
+
+        function toggleAutoplay() {
+            isAutoplayEnabled = !isAutoplayEnabled;
+            
+            const toggleBtn = document.getElementById('autoplay-toggle');
+            const icon = document.getElementById('autoplay-icon');
+            const text = document.getElementById('autoplay-text');
+            
+            if (isAutoplayEnabled) {
+                toggleBtn.classList.add('playing');
+                icon.textContent = '⏸';
+                text.textContent = 'Auto';
+                // Reset progress and start fresh
+                carouselProgressValue = 0;
+                carouselElapsedTime = 0;
+                startAutoplay(false);
+            } else {
+                toggleBtn.classList.remove('playing');
+                icon.textContent = '▶';
+                text.textContent = 'Play';
+                stopAutoplay();
+                // Reset progress bar
+                carouselProgressValue = 0;
+                carouselElapsedTime = 0;
+                const progressBar = document.getElementById('carousel-progress');
+                if (progressBar) {
+                    progressBar.style.width = '0%';
+                }
+            }
         }
 
         function loadCarouselContent(slideId) {
             const slide = carouselSlides.find(s => s.id === slideId);
             const content = document.getElementById('carousel-content');
+            
+            if (!slide) {
+                content.innerHTML = '<p>Select a topic to learn more.</p>';
+                return;
+            }
+            
             content.innerHTML = `
-                <h4>${slide.title}</h4>
-                <p>${slide.content}</p>
+                <h4>${slide.icon || '💡'} ${slide.title}</h4>
+                <div class="carousel-content-body rich-content">${slide.content}</div>
             `;
+            
+            // Smooth scroll to content on mobile
+            if (window.innerWidth < 768) {
+                content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
+
+        // Keyboard Navigation for Carousel
+        function initCarouselKeyboardNav() {
+            document.addEventListener('keydown', (e) => {
+                // Only respond when on the TMYK page
+                const tmykPage = document.getElementById('knowmore');
+                if (!tmykPage || !tmykPage.classList.contains('active')) return;
+                
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    carouselPrev();
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    carouselNext();
+                } else if (e.key === ' ' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+                    e.preventDefault();
+                    toggleAutoplay();
+                }
+            });
+        }
+
+        // Touch Swipe Support for Carousel
+        function initCarouselTouchSwipe() {
+            const carouselWrapper = document.querySelector('.carousel-track-wrapper');
+            if (!carouselWrapper) return;
+            
+            let touchStartX = 0;
+            let touchEndX = 0;
+            const minSwipeDistance = 50;
+            
+            carouselWrapper.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+            
+            carouselWrapper.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, { passive: true });
+            
+            function handleSwipe() {
+                const swipeDistance = touchEndX - touchStartX;
+                
+                if (Math.abs(swipeDistance) < minSwipeDistance) return;
+                
+                if (swipeDistance > 0) {
+                    carouselPrev(); // Swipe right = go to previous
+                } else {
+                    carouselNext(); // Swipe left = go to next
+                }
+            }
+        }
+
+        // Initialize carousel keyboard navigation on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initCarouselKeyboardNav();
+        });
 
         // Calendar Functions
         function renderCalendar() {
@@ -1253,6 +1889,31 @@
         }
 
         // Newsletter Functions
+        
+        /**
+         * Handle newsletter subscribe button click
+         * Uses mailto: for mobile devices, Outlook Web App for desktop
+         */
+        function handleSubscribeClick() {
+            const recipient = 'ryan.baldwin@walmart.com';
+            const subject = 'Subscribe to Work-Hub Newsletter';
+            const body = 'Add me to the list!';
+            
+            // Detect mobile device
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+                || (navigator.maxTouchPoints > 0 && window.innerWidth < 1024);
+            
+            if (isMobile) {
+                // Use mailto: for mobile - works with native mail apps
+                const mailtoUrl = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.location.href = mailtoUrl;
+            } else {
+                // Use Outlook Web App deeplink for desktop
+                const owaUrl = `https://outlook.wal-mart.com/mail/deeplink/compose?to=${encodeURIComponent(recipient)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.open(owaUrl, '_blank', 'noopener,noreferrer');
+            }
+        }
+        
         function renderNewsletters() {
             const container = document.getElementById('newsletter-items');
             
