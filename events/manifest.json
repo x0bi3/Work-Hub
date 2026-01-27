@@ -1,18 +1,4 @@
 {
-  "events": [
-    {
-      "id": "ev_ob9lenwmt_1767891000463",
-      "title": "Test",
-      "slug": "test",
-      "path": "events/2026/01/test.json",
-      "startDate": "2026-01-08T10:49",
-      "endDate": "2026-01-08T11:49",
-      "location": "Test",
-      "eventType": "single",
-      "description": "Test",
-      "status": "active",
-      "updatedAt": "2026-01-08T16:56:22.307Z"
-    }
-  ],
-  "lastUpdated": "2026-01-27T18:41:11.270Z"
+  "events": [],
+  "lastUpdated": "2026-01-27T10:30:00.000Z"
 }
