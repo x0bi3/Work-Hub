@@ -1,0 +1,13 @@
+{
+  "id": "ev_ob9lenwmt_1767891000463",
+  "title": "Test",
+  "description": "Test",
+  "startDate": "2026-01-08T10:49",
+  "endDate": "2026-01-08T11:49",
+  "location": "Test",
+  "eventType": "single",
+  "recurrence": null,
+  "status": "active",
+  "createdAt": "2026-01-08T16:50:00.463Z",
+  "updatedAt": "2026-01-27T18:50:40.116Z"
+}
