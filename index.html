@@ -881,10 +881,59 @@
     </style>
 </head>
 <body>
-    <header>
+    <header style="position: relative;">
         <h1>📚 Work Hub Portal</h1>
         <p>Your Employee Resource Center</p>
+        <!-- VOTA Button -->
+        <button onclick="openVotaModal()" 
+                style="position: absolute; top: 1.5rem; right: 1.5rem; padding: 10px 20px; background: linear-gradient(135deg, #BF5B04, #457373); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: all 0.3s;" 
+                onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.25)';"
+                onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';">
+            🗳️ VOTA
+        </button>
     </header>
+
+    <!-- VOTA Modal -->
+    <div id="vota-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; border-radius: 12px; padding: 2rem; max-width: 450px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); position: relative;">
+            <button onclick="closeVotaModal()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;" aria-label="Close modal">&times;</button>
+            <h3 style="color: #BF5B04; margin-bottom: 1.5rem; font-size: 1.4rem;">🗳️ VOTA Submission</h3>
+            <form id="vota-form" onsubmit="submitVota(event)">
+                <div style="margin-bottom: 1.25rem;">
+                    <label for="vota-associate-id" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333;">Associate ID</label>
+                    <input type="text" 
+                           id="vota-associate-id" 
+                           placeholder="Enter 1-5 digit ID" 
+                           pattern="[0-9]{1,5}" 
+                           maxlength="5" 
+                           required 
+                           style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 1rem; transition: border-color 0.3s;"
+                           onfocus="this.style.borderColor='#457373';"
+                           onblur="this.style.borderColor='#ddd';">
+                    <small style="color: #666; font-size: 0.85rem;">Numbers only, 1-5 digits</small>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="vota-message" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333;">VOTA Message</label>
+                    <textarea id="vota-message" 
+                              placeholder="Enter your message (max 500 characters)" 
+                              maxlength="500" 
+                              required 
+                              rows="5"
+                              style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 1rem; resize: vertical; min-height: 100px; transition: border-color 0.3s;"
+                              onfocus="this.style.borderColor='#457373';"
+                              onblur="this.style.borderColor='#ddd';"
+                              oninput="updateCharCount(this)"></textarea>
+                    <small style="color: #666; font-size: 0.85rem;"><span id="vota-char-count">0</span>/500 characters</small>
+                </div>
+                <button type="submit" 
+                        style="width: 100%; padding: 14px; background: linear-gradient(135deg, #BF5B04, #457373); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 1.1rem; cursor: pointer; transition: all 0.3s;"
+                        onmouseover="this.style.opacity='0.9';"
+                        onmouseout="this.style.opacity='1';">
+                    📧 Submit VOTA
+                </button>
+            </form>
+        </div>
+    </div>
 
     <nav class="main-nav">
         <button class="nav-tab active" onclick="showPage('faq')">❓ F.A.Q.</button>
@@ -1948,6 +1997,126 @@
             `;
             document.body.appendChild(modal);
         }
+
+        // VOTA Modal Functions
+        
+        /**
+         * Open the VOTA submission modal
+         */
+        function openVotaModal() {
+            const modal = document.getElementById('vota-modal');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent scrolling behind modal
+            
+            // Reset form
+            document.getElementById('vota-form').reset();
+            document.getElementById('vota-char-count').textContent = '0';
+            
+            // Focus on the first input
+            setTimeout(() => document.getElementById('vota-associate-id').focus(), 100);
+        }
+        
+        /**
+         * Close the VOTA submission modal
+         */
+        function closeVotaModal() {
+            const modal = document.getElementById('vota-modal');
+            modal.style.display = 'none';
+            document.body.style.overflow = ''; // Restore scrolling
+        }
+        
+        /**
+         * Update character count for VOTA message
+         */
+        function updateCharCount(textarea) {
+            const count = textarea.value.length;
+            const counter = document.getElementById('vota-char-count');
+            counter.textContent = count;
+            
+            // Change color when approaching limit
+            if (count >= 450) {
+                counter.style.color = '#BF5B04';
+            } else {
+                counter.style.color = '#666';
+            }
+        }
+        
+        /**
+         * Validate Associate ID (1-5 digits only)
+         */
+        function validateAssociateId(id) {
+            const pattern = /^[0-9]{1,5}$/;
+            return pattern.test(id);
+        }
+        
+        /**
+         * Submit VOTA form and trigger mailto
+         */
+        function submitVota(event) {
+            event.preventDefault();
+            
+            const associateId = document.getElementById('vota-associate-id').value.trim();
+            const message = document.getElementById('vota-message').value.trim();
+            
+            // Validate Associate ID
+            if (!validateAssociateId(associateId)) {
+                alert('Please enter a valid Associate ID (1-5 digits only)');
+                document.getElementById('vota-associate-id').focus();
+                return;
+            }
+            
+            // Validate message length
+            if (message.length === 0) {
+                alert('Please enter a VOTA message');
+                document.getElementById('vota-message').focus();
+                return;
+            }
+            
+            if (message.length > 500) {
+                alert('VOTA message must be 500 characters or less');
+                document.getElementById('vota-message').focus();
+                return;
+            }
+            
+            // Build email content
+            const recipient = 'ryan.baldwin@walmart.com';
+            const subject = 'VOTA Submission';
+            const body = `Associate ID: ${associateId}\n\nVOTA Message:\n${message}`;
+            
+            // Detect mobile device
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+                || (navigator.maxTouchPoints > 0 && window.innerWidth < 1024);
+            
+            if (isMobile) {
+                // Use mailto: for mobile - works with native mail apps
+                const mailtoUrl = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.location.href = mailtoUrl;
+            } else {
+                // Use Outlook Web App deeplink for desktop
+                const owaUrl = `https://outlook.wal-mart.com/mail/deeplink/compose?to=${encodeURIComponent(recipient)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.open(owaUrl, '_blank', 'noopener,noreferrer');
+            }
+            
+            // Close modal after submission
+            closeVotaModal();
+        }
+        
+        // Close modal when clicking outside
+        document.getElementById('vota-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeVotaModal();
+            }
+        });
+        
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('vota-modal');
+                if (modal.style.display === 'flex') {
+                    closeVotaModal();
+                }
+            }
+        });
 
         // Initialize on load
         init();
