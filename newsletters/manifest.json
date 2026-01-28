@@ -5,15 +5,15 @@
       "title": "Fancy New Newsletter",
       "slug": "fancy-new-newsletter",
       "path": "newsletters/2026/01/fancy-new-newsletter.html",
-      "status": "draft",
+      "status": "published",
       "publishDate": "2026-01-28",
       "tags": [
         "format",
         "test",
         "newsletter"
       ],
-      "updatedAt": "2026-01-28T16:08:28.709Z"
+      "updatedAt": "2026-01-28T16:33:11.121Z"
     }
   ],
-  "lastUpdated": "2026-01-28T16:31:33.380Z"
+  "lastUpdated": "2026-01-28T16:33:12.758Z"
 }
