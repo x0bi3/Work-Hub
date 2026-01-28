@@ -1,6 +1,20 @@
 {
   "newsletters": [
     {
+      "id": "nl_noqg3rsot_1769616508709",
+      "title": "Fancy New Newsletter",
+      "slug": "fancy-new-newsletter",
+      "path": "newsletters/2026/01/fancy-new-newsletter.html",
+      "status": "draft",
+      "publishDate": "2026-01-28",
+      "tags": [
+        "format",
+        "test",
+        "newsletter"
+      ],
+      "updatedAt": "2026-01-28T16:08:28.709Z"
+    },
+    {
       "id": "nl_umv5w58yc_1768414651312",
       "title": "Testing My Newsletter Publication",
       "slug": "testing-my-newsletter-publication",
@@ -11,5 +25,5 @@
       "updatedAt": "2026-01-14T18:17:31.312Z"
     }
   ],
-  "lastUpdated": "2026-01-28T15:19:55.483Z"
+  "lastUpdated": "2026-01-28T16:08:30.387Z"
 }
