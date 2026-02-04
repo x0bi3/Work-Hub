@@ -1,4 +1,17 @@
 {
-  "events": [],
-  "lastUpdated": "2026-02-04T15:14:36.021Z"
+  "events": [
+    {
+      "id": "ev_mhcgp7fj9_1770224298019",
+      "title": "Grand Opening",
+      "slug": "grand-opening",
+      "path": "events/2026/02/grand-opening.json",
+      "startDate": "2026-02-04T13:57",
+      "endDate": "2026-02-04T16:57",
+      "location": "",
+      "eventType": "single",
+      "status": "active",
+      "updatedAt": "2026-02-04T16:58:18.020Z"
+    }
+  ],
+  "lastUpdated": "2026-02-04T16:58:19.397Z"
 }
